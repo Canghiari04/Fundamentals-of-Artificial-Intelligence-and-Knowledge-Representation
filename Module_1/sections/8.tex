@@ -175,6 +175,59 @@ Once the principal incompatibilities have been identified, it's crucial to under
         \begin{center}
             \includegraphics[width=0.5\textwidth]{img/img30.png} 
         \end{center}
+
+    At the end, it's necessary to list all the incompatibilities dected by the planning graph, divided into: interference, inconsistent effects and competing needs. 
+
+    \begin{center}
+        \begin{tabular}{|l|}
+            \hline
+            \bf Interference \\ 
+            \hline
+            load(A, L) - move(R, L, P) \\
+            load(B, L) - move(R, L, P) \\
+            \hline
+        \end{tabular} \vspace{3.5pt}
+    \end{center} \vspace{7pt}
+
+    \begin{center}
+        \begin{tabular}{|l|}
+            \hline
+            \bf Inconsistent effects \\ 
+            \hline
+            load(A, L) - no-op at at(A, L) \\
+            load(B, L) - no-op at at(B, L) \\
+            move(R, L, P) - no-op at at(R, P) \\
+            move(R, L, P) - no-op at hasFuel(R) \\
+            \hline
+        \end{tabular} \vspace{3.5pt}
+    \end{center} \vspace{7pt}
+
+    \begin{center}
+        \begin{tabular}{|l|}
+            \hline
+            \bf Propositions incompatibilities \\ 
+            \hline
+            at(A, L) - in(R, A) \\ 
+            at(B, L) - in(R, B) \\ 
+            at(R, P) - at(R, L) \\ 
+            at(R, P) - hasFuel(R) \\ 
+            in(A, R) - at(R, P) \\ 
+            in(B, R) - at(R, P) \\ 
+            \hline
+        \end{tabular} \vspace{3.5pt}
+    \end{center} \vspace{7pt}
+
+    Before moving on, it's crucial to focus on some steps done about the listed incompatibilities:
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemi}{-}
+        \item \textbf{Interference}. \\ As we already know, interferences describe when an action deletes the precondition of an another action. Inside the planning graph this occurs between the predicates \textit{load(\dots)} and \textit{move(\dots)}.
+        \item \textbf{Inconsistent Effects}. \\ Inconsistent effects define when an action negates the precondition of an another action. Generally, they happen within any possible actions executable in our domain and the \textit{no-op operators}.
+        \item \textbf{Proprositions incompatibilities}. \\ Propositions incompatibilities represent a key concept in plannig graph, even though they have not been defined yet. We can see their as a summary of the all propositions incompatibilities already in the planning graph. Usually, the main incompatibilities are between: 
+            \begin{itemize}[nosep]
+                \item \textbf{No-op propositions / effects propositions}. 
+                \item \textbf{New effects coming from the executed actions}. \\ For instance, we cannot have in the same propositional level the predicate $in(R, A)$ if the cart is already in the position $P$, $at(R, P)$.
+            \end{itemize}
+    \end{itemize}
 \end{example}
 
 Once the planning graph is built, we have to extract a \textbf{valid plan}, a connected and consistent subgraph of the planning graph\footnote{The \textbf{correctness} of
