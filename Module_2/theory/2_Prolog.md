@@ -256,3 +256,146 @@ Since the __head-tail notation__ might be quite difficult to use, the term `.(T,
 Even in this case, the recursive notation `[T | List]` is rather __verbose__. Therefore, we can use a more simplified syntax version, such as `[a, b, c]` for the term `[a | [b | [c | [ ]]]]`. 
 
 The greatest power about lists in Prolog comes from the easy way to manipulate them using an __unification algorithm__. This provides a complete method for accessing and deconstructing list content.
+```prolog
+p([1, 2, 3, 4, 5, 6, 7, 8, 9]).
+
+:- p(X).
+yes X = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+:- p([X|Y]).
+yes X = 1 Y = [2, 3, 4, 5, 6, 7, 8, 9]
+
+:- p([X,Y|Z]).
+yes X = 1 Y = 2 Z = [3, 4, 5, 6, 7, 8, 9]
+
+:- p([_|X]).
+yes X = [2, 3, 4, 5, 6, 7, 8, 9]
+```
+This snippet of code represents some examples about list unification processes. In particular, it's important to focus on the last predicate figured: we used the anonymus symbol to create a new list containing all the previous values except the first one. The __anonymus symbol__ allow us to "delete" somehow the first value of the current data structure.
+
+List operations are inherently recursive, using the `[Head|Tail]` data structure to process one element at a time, until the base case `[]` (empty list) is reached. Many predicates about `list` can be written using this rule as main knowledge.
+
+1. __isList__
+
+    `isList` checks if an argument is a list, the base case is the empty list `[]`, and the recursive part checks if the tail is also a list. 
+    ``` prolog
+    isList([]).
+    isList([X|Tail]) :- isList(Tail).
+
+    :- isList([1, 2, 3]).
+    yes 
+
+    :- isList([a|b]).
+    no
+    ```
+
+2. __member__
+
+    `member` checks if an element is in a given list, the base case is when the element coincide with the head of the list, and the recursive case checks if the element is in the tail of the list.
+    ```prolog
+    member(X, [X| ]).
+    member(X, [_|Tail]) :- member(X, Tail).
+
+    :- member(1, [1, 2, 3]).
+    yes 
+
+    :- member(4, [1, 2, 3]).
+    no
+
+    :- member(X, [1, 2, 3]).
+    yes X = 1;
+        X = 2:
+        X = 3;
+    no
+    ```
+
+3. __length__
+
+    `length` defines the size of the list, it takes as first argument a list and the second argument is the number of elements contained in the list.
+    ```prolog
+    length([], 0).
+    length([_|Tail], N) :- 
+        length(Tail, NT),
+        N is NT + 1.
+
+    :- length([1, 2, 3], 3).
+    yes
+
+    :- length([1, 2, 3], Result).
+    yes Result = 3
+    ```
+
+4. __append__
+
+    `append` predicate takes three lists as arguments, which the first two are real lists, already instanciated, instead the last argument is the list obtained by concatenating  the two lists. This is a highly reversible and powerful tool. 
+    
+    1. If the first list is empty, the result is the second list.
+    2. If the first list has a `head`, keep it, and recursively, append the rest to the second list.
+
+    ```prolog 
+    append([], L1, L1).
+    append([H | Rest1], L2, [H | NewTail]) :-
+        append(Rest1, L2, NewTail).
+
+    :- append([1, 2], [3, 4, 5], L).
+    yes
+
+    L = [1, 2, 3, 4, 5]
+    :- append([1, 2], L2, [1, 2, 4, 5]).
+    yes
+
+    L2 = [4, 5]
+    :- append([1, 3], [2, 4], [1, 2, 3, 4]).
+    no
+    ```
+
+5. __deleteFirstOccurrence__
+
+    `deleteFirstOccurrence` takes as first and second arguments an element and a list respectively, and the third argument is the list without the first occurrence of the element.
+
+    ```prolog
+    deleteFirstOccurence(El, [], []).
+    deleteFirstOccurence(El, [El|T], T).
+    deleteFirstOccurence(El, [H|T], [H|T1]) :-
+        deleteFirstOccurence(El, T, T1).
+    ```
+
+6. __deleteAllOccurrences__
+
+    `deleteAllOccurrences` is a predicate that takes as first and second arguments an element and a list, the third parameter is the list without all the terms that unify with the element.
+
+    ```prolog
+    deleteAllOccurences(El, [], []).
+    deleteAllOccurences(El, [El|T], Result):- deleteAllOccurrences(El, T, Result).
+    deleteAllOccurences(El, [H|T], [H|T1]) :- deleteAllOccurences(El, T, T1).
+    ```
+
+7. __reverse__ 
+
+    `reverse` taking two lists as arguments, it returns a list that is the reversed of the second given.
+
+    ```prolog
+    reverse([],[]).
+    reverse([H|T], Result) :-
+        reverse(T, Partial),
+        append(Partial, [H], Result).
+
+    :- reverse([], []).
+        yes
+
+    :- reverse([1, 2], Lr).
+        yes Lr = [2, 1]
+
+    :- reverse(L, [2, 1]).
+        yes L = [1, 2]
+    ```
+
+## 8. List exercises
+
+## 9. The CUT
+The __cut operator__ `!` is a pre-defined predicate that allows to interfere and control the execution process of a Prolog program. It has no logic meaning or declarative semantic, but it heavily affects the execution process.
+
+Any execution process is build upon two stacks:
+
+- __Backtracking stack__. It contains the set of open choice points.
+- __Execution stack__. It contains the activation record of the predicates.
