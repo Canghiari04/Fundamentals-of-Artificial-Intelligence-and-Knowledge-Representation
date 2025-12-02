@@ -10,7 +10,7 @@ Popular hierarchical planning algorithms are:
 \begin{itemize}[nosep]
     \renewcommand{\labelitemi}{-}
     \item STRIPS-like.
-    \item Partial Order Planning.
+    \item Partial Order Planning-like.
 \end{itemize} \vspace{3.5pt}
 
 \textbf{ABSTRIPS} \\
@@ -100,7 +100,7 @@ Let's see an example for better understanding.
         \item Add to the plan the action to meet the current precondition.
     \end{itemize} \vspace{7pt}
 
-    Since the first preconditions to meet is $on(c, b)$ the only action capable is $stack(c, b)$. All the preconditions of $stack(c, b)$ are less critical than the current threshold, 
+    Since the first precondition to meet is $on(c, b)$ the only action capable is $stack(c, b)$. All the preconditions of $stack(c, b)$ are less critical than the current threshold, 
     therefore they are considered true. \vspace{3.5pt}
     
     \begin{center}
@@ -208,4 +208,75 @@ Let's see an example for better understanding.
 \end{example}
 
 \textbf{Macro-operators} \\
-\dots
+This version of hierarchical planning uses two types of operators:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Atomic operators}. \\ Atomic operators represent elementary actions that can be directly executed by an agent.
+    \item \textbf{Macro operators}. \\ Macro operators represent a set of general actions that can be decomposed into \textbf{atomic operators}.
+\end{itemize}
+
+Every macro operator before its execution must be decomposed in any single action that makes it. Usually, its decomposition can be done by \textbf{precompiled decomposition} or 
+by a \textbf{plan}. \vspace{3.5pt}
+
+Precompiled decomposition occurs as follows: the description of the macro operator is divided into the basic operators to be executed at run-time.
+\begin{example}
+    i.e. Cook world. \vspace{3.5pt}
+
+    Given the action  \vspace{7pt}
+
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Cook(X)} \\
+            Precond: $have(X), have(pot), have(salt), in(water, salt)$ \\
+            Effect: $cooked(X)$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    decomposed it in its basic operators. \vspace{7pt}
+
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Decomposition} \\
+            $S_1: boil(water)$, \\
+            $S_2: put(salt, water)$, \\
+            $S_3: put(X, pot)$, \\
+            $S_4: boilinWater(X)$ \\
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    the ordering constraint is: $\langle S_1 < S_2, S_2 < S_3, S_2 < S_4, S_3 < S_4 \rangle$.
+\end{example}
+
+Instead the \textbf{decomposition} by a \textbf{plan} is performed through a low level search for summarizing the atomic actions that composed the macro action. The planning strategy can be 
+either linear or non-linear, even though generally is preferred the second one, like Partial Ordering Planning. A hierarchical non-linear algorithm at each step can choose
+one of the following behaviors:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Reach an open goal with a operator}; we mean the preconditions defined above the actions.
+    \item \textbf{Expand a macro step of the plan}; this means taking a macro action already in the plan and replacing it with its more detailed sequence of actions, so its decomposition.
+\end{itemize} 
+
+To ensure the decomposition is safe, some properties must be guaranteed. If the macro action $A$ has the effect $X$ and is expanded with the plan $P$:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item $X$ must be the effect of at least one of the actions in which $A$ is decomposed and it should be protected until the end of the plan $P$.
+    \item Each precondition of the actions in $P$ must be guaranteed by the previous actions in $P$ or it must be a precondition of $A$.
+    \item The $P$ actions must not threat any causal link when $P$ is substituted for $A$ in the plan.
+\end{itemize}
+
+Only under these conditions you can replace the macro action $A$ with the plan $P$. When replacing $A$ with $P$, the orderings and casual links should be added.
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Orderings}
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemii}{-}
+        \item For each $B$ such that $\langle B < A \rangle$ then $\langle B < first(P) \rangle$ must be imposed\footnote{With $first(P)$, we mean the first action of the decomposition.}.
+        \item For each $B$ such that $\langle A < B \rangle$ then $\langle last(P) < B \rangle$ must be imposed\footnote{With $last(P)$, we mean the last action of the decomposition.}.
+    \end{itemize}
+    \item \textbf{Casual link}
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemii}{-}
+        \item If $\langle S, C, A \rangle$ is a causal link in the initial plan, then it must be replaced by a set of causal links $\langle S, C, S_i \rangle$ where $S_i$ are the actions of $P$ that have $C$ as a precondition.
+        \item If $\langle A, C, S \rangle$ is a causal link in the initial plan, then it must be replaced by a set of causal links $\langle S_i, C, S \rangle$ where $S_i$ are the actions of $P$ that have $C$ as a effect.
+    \end{itemize}
+\end{itemize} 

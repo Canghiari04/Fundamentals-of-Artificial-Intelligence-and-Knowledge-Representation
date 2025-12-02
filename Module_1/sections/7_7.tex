@@ -1,0 +1,92 @@
+Up to now we deal only with \textbf{generative planners}, also called offline planners: they assume a \textbf{closed world assumption}\footnote{Offline planners assume that nothing changes while they are planning.} to design a plan and finally 
+execute the plan created. \vspace{3.5pt}
+
+However, soo many problems should encountered during the execution of the actions:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item Effects of an action are not the ones expected.
+    \item An action should be executed but its preconditions are not satisfied.
+\end{itemize} 
+
+While planning or executing, the agent should perceive the changes in the world and act accordingly. \textbf{Reactive planners}, also called online planners,
+execute real actions while they are planning; therefore they assume an \textbf{open world assumption}: they consider that the informations that are not 
+explicitly stated are not false, but \textbf{unknown}. The unknown informations can be retrieved by \textbf{sensing actions}, modeled as any action seen so far.
+One peculiarity of these new actions is that they do not change the current state, instead they are waiting to reach new informations by the world considered. \vspace{3.5pt}
+
+There are different approaches, as \textbf{conditional planning} or \textbf{integration between planning and execution}; we explore the first type. Conditional planners 
+are search algorithms that generate various alternative plans for each source of uncertainty of the plan. Basically, a conditional plan is composed by:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item Casual actions, that change the current state.
+    \item Sensing actions to retrieve unknown informations.
+    \item Several alternative partial plans  of which only one will be executed depending on the results of the observations.
+\end{itemize}
+\begin{example}
+    i.e. Tire world. \vspace{3.5pt}
+
+    Given the initial state \vspace{7pt}
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Initial state} \\
+            $on(tire1, hub1), flat(tire1),$ \\
+            $\textit{inflated}(spare), \textit{off}(spare),$ \\
+            $tire(tire1)$ 
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    define a plan that reaches the goal state \vspace{7pt}
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Goal state} \\
+            $on(X,hub1) \land \textit{inflated}(X)$
+        \end{tabular}
+    \end{center}
+
+    The executable actions are:  \vspace{7pt}
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{putdown(X,Y)} \\
+            Precond: $\textit{off}(X), clearHub(Y)$ \\
+            Effect: $on(X,Y), \neg \textit{off}(X), \neg clearHub(Y)$
+        \end{tabular} \vspace{7pt}
+
+        \begin{tabular}{l}
+            \textbf{remove(X,Y)} \\
+            Precond: $on(X,Y), \neg intact(X)$ \\
+            Effect: $\neg on(X,Y), \textit{off}(X), clearHub(Y)$
+        \end{tabular} \vspace{7pt}
+        
+        \begin{tabular}{l}
+            \textbf{check(X)}\footnote{\textbf{check(\dots)} is a sensing action. It does not change the current state but it retrives unknown informations from the world considered.} \\
+            Precond: $tire(X)$ \\
+            Effect: $knowsWhether(intact(X))$
+        \end{tabular} \vspace{7pt}
+        
+        \begin{tabular}{l}
+            \textbf{inflate(X)} \\
+            Precond: $intact(X), flat(X)$ \\
+            Effect: $\textit{inflated}(X), \neg flat(X)$
+        \end{tabular} \vspace{7pt}
+    \end{center} \vspace{3.5pt}
+
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{img/img31.png}
+    \end{center} \vspace{3.5pt}
+
+    The condition $intact(tire1)$ does not appear in the description of the initial state and cannot be obtained as effect of any action: the plan will certainly \textbf{fail}.
+    Using the sensing action one we can build a \textbf{conditional plan}: \vspace{3.5pt}
+
+    \begin{center}
+        \includegraphics[width=0.7\textwidth]{img/img32.png}
+    \end{center} \vspace{3.5pt}
+
+    The initial partial plan $\textit{inflate}(tire1)$ is correct only if the condition $intact(tire1)$ is true in the initial state; if this is not verified, we should generate another partial plan
+    that takes as precondition the opposite case, so the predicate $\neg intact(tire1)$. \vspace{3.5pt}
+
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{img/img33.png}
+    \end{center} \vspace{3.5pt}
+
+    We should generate a copy of the goal for every other executing scenario and create a corresponding plan for each of them. It's easy to observe that any conditional planner
+    could generate an \textbf{exponential number} of plans.
+\end{example}
