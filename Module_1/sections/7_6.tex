@@ -1,0 +1,211 @@
+\textbf{Hierarchical planning} are planning strategies that use different \textbf{levels of abstraction} to create a plan. This algorithm can design a plan following two
+different ways, which are:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item Assigning \textbf{critical values} to any possible precondition.
+    \item Deviding the actions of a plan into \textbf{atomic operators} and \textbf{macro operators}\footnote{All operators are again defined by preconditions and effects, as usual.}.
+\end{itemize}
+
+Popular hierarchical planning algorithms are:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item STRIPS-like.
+    \item Partial Order Planning.
+\end{itemize} \vspace{3.5pt}
+
+\textbf{ABSTRIPS} \\
+Planners who enhance the STRIPS-like definition of actions use \textbf{criticality values} associated to each possible preconditions; values are proportional to the complexity 
+of the actions achievement. \vspace{3.5pt}
+
+The planning algorithm proceeds at different levels of abstraction spaces. At each level, preconditions related to a lower criticality value are ignored. \vspace{3.5pt}
+
+Given some hints, it's possible to summarize some steps that describe the real behavior of ABSTRIPS:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{}
+    \item $1^{st}$ A \textbf{threshold} value is fixed; generally, it starts from the value associated with the most complex action to achieve.
+    \item $2^{nd}$ All the preconditions whose \textbf{criticality value} is less than the threshold are considered true, ignored somehow.
+    \item $3^{rd}$ STRIPS finds a plan that meets all the preconditions whose criticality value is greater or equal to the threshold chosen previously.
+    \item $4^{th}$ It then uses the plan obtained as a guide and it \textbf{decreases} the value of the threshold.
+    \item $5^{th}$ It extends the plan with operators or actions having a criticality value that satisfies the current threshold.
+    \item $6^{th}$ It decreases the value of the threshold until all the preconditions have been considered.
+\end{itemize}
+
+Let's see an example for better understanding.
+\begin{example}
+    i.e. Sussman anomaly. \vspace{3.5pt} 
+
+    Given an initial state \vspace{7pt}
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Initial state} \\
+            $ontable(a), ontable(b)$ \\
+            $clear(b), clear(c)$ \\
+            $handempty, on(c,a)$ 
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+    define a plan that reaches the goal state \vspace{7pt}
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Goal state} \\
+            $on(b,c) \land on(c,a)$
+        \end{tabular}
+    \end{center}
+    The executable actions are: \vspace{7pt}
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Putdown(X)} \\
+            Precond: $holding(X)$ \\
+            Effect: $handempty, clear(X), ontable(X), \neg \text{Precond}$
+        \end{tabular} \vspace{7pt}
+
+        \begin{tabular}{l}
+            \textbf{Stack(X,Y)} \\
+            Precond: $holding(X), clear(Y)$ \\
+            Effect: $handempty, on(X,Y), clear(X), \neg \text{Precond}$\footnote{To save space, we did not list every precondition that was denied by the action.}
+        \end{tabular} \vspace{7pt}
+
+        \begin{tabular}{l}
+            \textbf{Pickup(X)} \\
+            Precond: $handempty, clear(X), ontable(X)$ \\
+            Effect: $holding(X), \neg \text{Precond}$
+        \end{tabular} \vspace{7pt}
+
+        \begin{tabular}{l}
+            \textbf{Unstack(X,Y)} \\
+            Precond: $handempty, on(X,Y), clear(Y)$ \\
+            Effect: $holding(X), clear(Y), \neg \text{Precond}$
+        \end{tabular} \vspace{7pt}
+    \end{center} \vspace{3.5pt}
+
+    $1^{st}$ step:
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemi}{-}
+        \item Specify a hierarchical order according to the criticality values associated to the predicates.
+    \end{itemize} \vspace{7pt}
+
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Predicates} \\
+            $on(...)$ $\textbf{(3)}$ \\ 
+            $ontable(...), clear(...), holding(...)$ $\textbf{(2)}$ \\
+            $handempty$ $\textbf{(1)}$ \\
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    $2^{st}$ step:
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemi}{-}
+        \item Define the first level of abstraction considering only the preconditions with criticality value equal to 3.
+        \item Determine which action matches the preconditions considered.
+        \item Add to the plan the action to meet the current precondition.
+    \end{itemize} \vspace{7pt}
+
+    Since the first preconditions to meet is $on(c, b)$ the only action capable is $stack(c, b)$. All the preconditions of $stack(c, b)$ are less critical than the current threshold, 
+    therefore they are considered true. \vspace{3.5pt}
+    
+    \begin{center}
+        \begin{tabular}{ll}
+            \textbf{State} & \textbf{Goal stack} \\
+            $handempty$ & $on(a, c)$ \\
+            $\textbf{on(c, b)}, on(c, a)$ & $on(c, b) \land on(a, c)$ \\
+            $clear(b), clear(c)$ & \\
+            $ontable(a), ontable(b)$ &
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    The actions $stack(a, c)$ is added following the same process for $stack(c, b)$. The complete plan at level 1 is: $\langle 1.stack(c, b), 2.stack(a, c) \rangle$ \vspace{3.5pt}
+
+    $3^{st}$ step:
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemi}{-}
+        \item Define the second level of abstraction considering only the preconditions with criticality value equal to 2.
+        \item Restart from the initial state and insert in the goal stack the initial goals, the action computed at level 1 and their precondtions.
+    \end{itemize} \vspace{3.5pt}
+
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Goal stack} \\
+            $holding(c)$ \\
+            $clear(b)$ \\
+            $holding(c) \land clear(b)$\\
+            $\textbf{stack(c, b)}$ \\
+            $holding(a)$ \\
+            $clear(c)$ \\
+            $holding(a) \land clear(c)$ \\
+            $\textbf{stack(a, c)}$ \\
+            $on(c, b) \land on(a, c)$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    The condition $holding(c)$ is satisfiable with the action $unstack(c, X)$ and the stack becomes: \vspace{3.5pt}
+
+    \begin{center}
+        \begin{tabular}{l}
+            \textbf{Goal stack} \\
+            $clear(c)$ \\
+            $on(c, X)$ \\
+            $clear(c) \land on(c, X)$ \\
+            $\textbf{unstack(c, X)}$ \\
+            $holding(c)$ \\
+            $clear(b)$ \\
+            $holding(c) \land clear(b)$\\
+            $\textbf{stack(c, b)}$ \\
+            $holding(a)$ \\
+            $clear(c)$ \\
+            $holding(a) \land clear(c)$ \\
+            $\textbf{stack(a, c)}$ \\
+            $on(c, b) \land on(a, c)$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    The preconditions of $unstack(c, X)$ are all met in the initial state by the substitution $X/a$. Executing the action $unstack(c, a)$ the initial state results: \vspace{3.5pt}
+
+    \begin{center}
+        \begin{tabular}{ll}
+            \textbf{State} & \textbf{Goal stack} \\
+            $clear(b)$ & $clear(b)$ \\
+            $clear(a)$ &  $holding(c) \land clear(b)$ \\
+            $ontable(a)$ & $\textbf{stack(c, b)}$ \\
+            $ontable(b)$ & $holding(a)$ \\
+            $handempty$ & $clear(c)$ \\
+            $holding(c)$ & $holding(a) \land clear(c)$ \\
+            & $\textbf{stack(a, c)}$ \\
+            & $on(c, b) \land on(a, c)$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    The complete plan at level 2 is: $\langle unstack(c, a) \land stack(c, b) \land pickup(a) \land stack(a, c) \rangle$ \vspace{3.5pt}
+
+    $4^{st}$ step:
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemi}{-}
+        \item Define the third level of abstraction considering only the preconditions with criticality value equal to 1.
+        \item Restart from the initial state and insert in the goal stack the initial goals, the action computed at level 2 and their precondtions.
+    \end{itemize} \vspace{3.5pt}
+
+    \begin{center}
+        \begin{tabular}{ll}
+            \textbf{Goal stack} \\
+            $handempty$ \\
+            $clear(c)$ \\
+            $on(c, a)$ \\
+            $clear(c) \land on(c, a) \land handempty$ \\
+            $\textbf{unstack(c, a)}$ \\
+            $holding(c)$ \\
+            $clear(b)$ \\
+            $holding(c) \land clear(b)$\\
+            $\textbf{stack(c, b)}$ \\
+            $holding(a)$ \\
+            $clear(c)$ \\
+            $holding(a) \land clear(c)$ \\
+            $\textbf{stack(a, c)}$ \\
+            $on(c, b) \land on(a, c)$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    Only the precondition $handempty$ still needs to be considered. The search for a solution to level 3 in this case is simply a check: the solution at level 2 is also 
+    correct for level 3 and the search stops.
+\end{example}
+
+\textbf{Macro-operators} \\
+\dots
