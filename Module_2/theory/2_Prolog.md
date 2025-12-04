@@ -1,4 +1,4 @@
-## Prolog 
+# Prolog 
 
 `A Prolog program is a set of definite Horn clauses.`
 

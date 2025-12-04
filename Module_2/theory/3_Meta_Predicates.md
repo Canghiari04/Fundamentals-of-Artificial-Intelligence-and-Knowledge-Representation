@@ -1,93 +1,145 @@
 # Meta-predicates in Prolog
 
-## Introduction
+`Equivalance of programs and data`
 
-In Prolog, predicates (programs) and terms (data) share the same syntactical structure. This unique feature allows predicates and terms to be exchanged and exploited in different roles. Meta-predicates are predefined predicates that work with these structures.
+## 1. Introduction
+There is one thing that make Prolog a really powerful programming language: __predicates__ and __terms__ (also viewed as programs and data) share the same __syntactic structure__. As a consequence of this equivalence, programs and data can be easily interchanged. But what does it really mean?
 
-## The `call` Predicate
+Prolog provides several predefined predicates, known as __meta-predicates__, to deal with these structures and work with them.
 
-### Basic Usage
+## 2. Call Predicate
+The `call` predicate is a fundamental meta-predicate that allows the execution of a term as if it were a goal. The key thing to observe is that with the `call` predicate, we can dynamically test a program inside the same program!
 
-The `call/1` predicate treats a term as a predicate and requests the Prolog interpreter to evaluate it:
+### Functionality 
+1. If a term $T$ is meant to be a predicate, we can prepare and create that term in a proper way and then __execute it__.
+2. __call(T)__: the term $T$ is treated as a goal, and the Prolog interpreter is requested to evaluate it. 
+3. The term $T$ must be a __non-numeric term__ at the moment of the evaluation, since a number cannot be evaluated in a logical sense.
+
+### Why Call is a Meta-Predicate
+The predicate `call` is considered to be a meta-predicate because:
+1. Its evaluation interfere with the Prolog interpreter, as it stops the evaluation of the current __goal__ in order to evaluate the subject of the `call` predicate.
+2. It directly alterates the program's execution flow.
+    #### Example
+    ```prolog
+    p(a).
+    q(x) :- p(x).
+
+    :- call(q(y)).
+    yes Y = a.
+    ```
+    Asking for `q(y)`, it is unified with the clause `q(x)`. Our goal becomes `p(y)`, and `p(y)` is true if $Y$ is unified with constant `a`. The final answer is: `q(y)` is verified if $Y = a$.
+
+    This code snippet demonstrates the previous definition: we can pass to the `call` meta-predicate pieces of a program instead of just data.
+
+    The predicate `call` can also be used to call other predicates.
+    ```prolog
+    p(X):- call(X).
+    q(a).
+
+    :- p(q(Y)).
+    yes Y = a.
+    ```
+
+### Example `if_then_else` Construct
+`call` is crucial for implementing control flow structures, such as an `if_then_else` construct. The goal is to define a `if_then_else(Cond, Goal1, Goal2)` clause such that: if `Cond` is true, execute `Goal1`; otherwise, execute `Goal2`.
 
 ```prolog
-p(a).
-q(X) :- p(X).
-
-% Query: call(q(Y))
-% Result: Y = a
-```
-
-### In Programs
-
-```prolog
-p(X) :- call(X).
-q(a).
-
-% Query: p(q(Y))
-% Result: Y = a
-```
-
-Some Prolog interpreters allow the shorthand:
-```prolog
-p(X) :- X.  % Equivalent to p(X) :- call(X).
-```
-
-### Example: If-Then-Else Construct
-
-```prolog
-if_then_else(Cond, Goal1, Goal2) :-
+if_then_else(Cond,Goal1,Goal2):-
     call(Cond), !,
     call(Goal1).
-if_then_else(Cond, Goal1, Goal2) :-
+if_then_else(Cond,Goal1,Goal2):-
     call(Goal2).
 ```
+The program `if_then_else` takes in input __three different programs__: `Cond`, `Goal1` and `Goal2`. (Note: in this case, the __CUT operator__ is essential to prevent the interpreter from backtracking the second clause if `Cond` succeeds).
 
-## The `fail` Predicate
+## 3. Fail predicate
+The `fail` predicate is a simple, arity-zero predicate used primarly to __explicitly control backtracking__.
 
-### Basic Behavior
-
-- `fail/0` takes no arguments (arity zero)
-- Its evaluation always fails
-- Forces **backtracking** explicitly
-  (we explicitly use it force backtracking and explore other branches of the search tree)
+### Functionality
+1. `fail` takes __no argument__.
+2. Its evaluation __always fails__.
+3. This failure forces the interpreter to __explore other alternatives__ (in other words, it activates the backtracking).
 
 ### Applications
+Forcing a proof to fail might seem counter-intuitive, but it serves three main purposes:
+1. To obtain some form of __iteration__ over data.
+2. To implement the __Negation as Failure__ mechanism.
+3. To implement a form of __logical implication__.
 
-#### 1. Iteration Over Data
+### Iteration Example
+Let us consider a __Knoledge Base__ with facts `p(X).` and suppose we want to apply a predicate `q(X)` on all $X$ that satisfy a fact `p(X)`. 
 
 ```prolog
-iterate :-
+iterate :- 
     call(p(X)),
-    verify(q(X)),
+    verify(q(X)), 
     fail.
+
 iterate.
 
 verify(q(X)) :- call(q(X)), !.
 ```
+- The first clause of `iterate` finds a solution for `p(X)`, executes `q(X)`, and then fails, triggering the search for the next solution for `p(X)`.
+- This process continues until `call(p(X))` eventually fails, at which point Prolog moves to the second clause, `iterate.`, which succeeds, stopping the overall goal.
 
-#### 2. Negation as Failure
+### Negation as Failure Example 
+Defining a predicate `not(P)` which is true if `P` is not a __logical consequence__ of the program.
 
 ```prolog
-not(P) :- call(P), !, fail.
+not(P) :- 
+    call(P),
+    !,
+    fail.
+
 not(P).
 ```
+- If `call(p)` succeeds, the cut `!` prevents backtracking, and `fail` ensures `not(P)` fails.
+- If `call(p)` fails, the first clause is skipped, and the second clause `not(P).` succeeds.
 
-#### 3. Defaults with Exceptions
+(Note: in this examplem, there are two items that don't have any __declarative meaning__: the predicate `call` and the CUT operator `!`).
+
+### Combining fail and CUT Example
+The sequence `!, fail` is often used to force a __global failure__ of a predicate, stopping not only backtracking within the predicate but also preventing all the other possible alternatives for it.
+
+Define the __fly property__, that is true for all the birds except penguins and ostriches.
 
 ```prolog
-fly(X) :- penguin(X), !, fail.
-fly(X) :- ostrich(X), !, fail.
-fly(X) :- bird(X).
+fly(X) :-
+    penguin(X),
+    !,
+    fail.
+
+fly(X) :- 
+    ostrich(X),
+    !,
+    fail.
+
+fly(X) :-
+    bird(X).
 ```
 
-## Second-Order Predicates
+If $X$ is a penguin, the first clause succeeds up to the `fail.`. The `!` prevents Prolog from trying the next `fly(X)` clauses, forcing the global failure for that specific $X$. Although this program is a good starting point for handling exceptions, it grows linearly according to the number of exceptions handled.
 
-### `setof/3` and `bagof/3`
+## 4. Setof and Bagof Predicates
+These meta-predicates address __second-order queries__, which ask for the collection of elements that satisfy a goal, rather than just a single solution.
 
-These predicates answer second-order queries: "which is the set/list of elements X such that p(X) is true?"
+### Existentially Quantification
+In Prolog, the usual query `:- p(X).` returns a __possible substitution__ for variables of `p` that satisfies the query, implying that $X$ is existentially quantified (is there an $X$ such that `p(x)` is true?).
 
-#### Knowledge Base for Examples
+Sometimes, it can be helpful to set up a query that asks: _which is the set $S$ of element $X$ such that `p(X)` is true?_ This type of query is named __second-order query__.
+
+#### `setof(X, P, S)`
+- __Functionality__. $S$ is the __set__ of instances $X$ that satisfy the goal $P$.
+- __Property__. It generally returns a set __without repetitions__ and the elements are typically sorted.
+- __Failure__. If no $X$ satisfied $P$, the predicate __fails__.
+
+#### `bagof(X, P, L)`
+- __Functionality__. $L$ is the __set__ of instances $X$ that satisfy the goal $P$.
+- __Property__. It returns a list that may contain __repetitions__.
+- __Failure__. If no $X$ satisfies $P$, the predicate __fails__.
+
+### Examples
+Given the Knowledge Base:
 ```prolog
 p(1).
 p(2).
@@ -97,238 +149,75 @@ q(2).
 r(7).
 ```
 
-#### Basic Examples
-
+The results of the following second-order queries are:
 ```prolog
-% setof returns unique elements, usually sorted
-?- setof(X, p(X), S).
-S = [0,1,2]
+:- setof(X, p(X), S).
+    yes S = [0, 1, 2]
+    X = X
 
-% bagof returns all elements in order of finding
-?- bagof(X, p(X), S).
-S = [1,2,0,1]
+:- bagof(X, p(X), L).
+    yes L = [1, 2, 0, 1]
+    X = X
 ```
 
-#### Conjunction of Goals
+As we can see, the set $S$ from `setof(X, P, S)` does not include repetitions, while `bagof(X, P, L)` returns a list that does.
 
+Furthermore, these meta-predicates allow for the __conjuction__ of goals within their own scope.
 ```prolog
-?- setof(X, (p(X), q(X)), S).
-S = [2]
+:- setof(X, (p(X), q(X)), S).
+    yes S = [2]
+    X = X
 
-?- bagof(X, (p(X), q(X)), S).
-S = [2]
+:- bagof(X, (p(X), q(X)), L).
+    yes L = [2]
+    X = X
+
+:- setof(X, (p(X), r(X)), S).
+    no
+
+:- bagof(X, (p(X), r(X)), L).
+    no
 ```
 
-#### Complex Terms
-
+The last two queries tell us that the Knowledge Base does not have any $X$ that satisfies the conjuction of goals `p(x), r(x)`.
 ```prolog
-?- setof(p(X), p(X), S).
-S = [p(0), p(1), p(2)]
+:- setof(p(X), p(X), S).
+    yes S = [p(0), p(1), p(2)]
+    X = X
 
-?- bagof(p(X), p(X), S).
-S = [p(1), p(2), p(0), p(1)]
+:- bagof(p(X), p(X), S).
+    yes S = [p(1), p(2), p(0), p(1)]
+    X = X
 ```
 
-### Variable Quantification
+These meta-predicates can also retrieve the __terms__ that make our goal true. For instance, the query `:- setof(p(x), p(x), S)` returns the set of terms `p(X)` that makes the goal `p(X)` verified.
 
-#### Knowledge Base
+### Example
+Given the Knoledge Base:
 ```prolog
-father(giovanni, mario).
-father(giovanni, giuseppe).
-father(mario, paola).
 father(mario, aldo).
+father(mario, paola).
+father(giovanni, mario).
 father(giuseppe, maria).
+father(giovanni, giuseppe).
 ```
 
-#### Without Explicit Quantification
+We want to derive which individuals are fathers.
 ```prolog
-?- setof(X, father(X, Y), S).
-% Returns X for each specific Y value
-Y = aldo, S = [mario];
-Y = giuseppe, S = [giovanni];
-Y = maria, S = [giuseppe];
-Y = mario, S = [giovanni];
-Y = paola, S = [mario]
+:- setof(X, Y^father(X,Y), S).
+    yes [giovanni, mario, giuseppe]
+    X = X
+    Y = Y
 ```
 
-#### With Existential Quantification
+The goal part uses a new __syntactic rule__, the __existential quantifier__ _Y^_. This allows us to retrieve the set of $X$ values such that there __exists__ a $Y$ that satisfies the goal `father(X, Y)`. If the exestential quantifier is not used, the final result will be diplayed as multiple solutions, one for each unique $(X, Y)$ pair that makes the goal `father(X, Y)` true.
 ```prolog
-?- setof(X, Y^father(X, Y), S).
-S = [giovanni, mario, giuseppe]
+:- setof((X, Y), father(X,Y), S).
+    yes S=[(giovanni, mario), (giovanni, giuseppe),
+           (mario, paola), (mario, aldo),
+           (giuseppe, maria)]
+    X = X
+    Y = Y
 ```
 
-#### Compound Terms
-```prolog
-?- setof((X, Y), father(X, Y), S).
-S = [(giovanni, mario), (giovanni, giuseppe),
-     (mario, paola), (mario, aldo),
-     (giuseppe, maria)]
-```
-
-## The `findall/3` Predicate
-
-### Behavior
-- Similar to `setof` and `bagof`
-- Variables not in first argument are automatically existentially quantified
-- Returns empty list if no solutions exist (instead of failing)
-
-### Examples
-
-```prolog
-?- findall(X, father(X, Y), S).
-S = [giovanni, mario, giuseppe]
-
-% Equivalent to: setof(X, Y^father(X, Y), S)
-```
-
-## Working with Rules
-
-Meta-predicates work with both facts and rules:
-
-```prolog
-p(X, Y) :- q(X), r(X).
-q(0).
-q(1).
-r(0).
-r(2).
-
-?- findall(X, p(X, Y), S).
-S = [0]
-```
-
-## Practical Application: Implication Verification
-
-Verify that all sons of a person are employees:
-
-```prolog
-father(p, Y) → employee(Y)
-
-imply(Y) :-
-    setof(X, father(Y, X), L),
-    verify(L).
-
-verify([]).
-verify([H|T]) :-
-    employee(H),
-    verify(T).
-```
-
-## Key Points Summary
-
-| Predicate | Behavior | Empty Case |
-|-----------|----------|------------|
-| `call(T)` | Executes term T as predicate | Fails if T fails |
-| `fail` | Always fails, forces backtracking | Always fails |
-| `setof(X,P,S)` | S is set of X satisfying P | Fails if no solutions |
-| `bagof(X,P,L)` | L is list of X satisfying P | Fails if no solutions |
-| `findall(X,P,L)` | L is list of X satisfying P | Returns [] if no solutions |
-
-These meta-predicates provide powerful meta-programming capabilities, allowing Prolog programs to reason about and manipulate other Prolog programs dynamically.
-
-## Iteration through setof
-```prolog
-% Iteration through setof
-% Execute the procedure q on each element for which p is true
-iterate :-
-    setof(X, p(X), L),
-    filter(L).
-
-filter([]).
-filter([H|T]) :-
-    call(q(H)),
-    filter(T).
-
-% Which difference with the implementation made through fail? What about backtrackability?
-
-% Verifying properties of terms
-% var(Term) - true if Term is currently a variable
-% nonvar(Term) - true if Term currently is not a free variable
-% number(Term) - true if Term is a number
-% ground(Term) - true if Term holds no free variables.
-
-% Accessing the structure of a term
-% Term =.. List
-% [SWI documentation]
-% – List is a list whose head is the functor of Term and the
-%   remaining arguments are the arguments of the term.
-% – Either side of the predicate may be a variable, but not both.
-
-% Examples:
-% ?- foo(hello, X) =.. List.
-% List = [foo, hello, X]
-% 
-% ?- Term =.. [baz, foo(1)].
-% Term = baz(foo(1))
-```
-## Accessing the clauses of a program
-In Prolog, terms and predicates are represented with
-the same structure
-In particular, a clause (a query) is represented as a
-term
-
-```prolog
-
-% Example: given
-% h.
-% h :- b1, b2, …, bn.
-% They correspond to the terms:
-% (h, true)
-% (h, ','(b1, ','(b2, ','( ...','( bn-1, bn) ...)))
-```
-## Accessing the clauses of a program – the predicate clause
-```prolog
-
-% clause(Head, Body)
-% true if (Head, Body) is unified with a clause stored
-% within the database program
-% When evaluated
-% – Head must be instantiated to a non-numeric term
-% – Body can be a variable or a term describing the body of a
-% clause
-% Its evaluation opens choice points, if more clauses
-% with the same head are available
-```
-```prolog
-% The predicate clause – example
-% Program:
-?- dynamic(p/1).
-?- dynamic(q/2).
-p(1).
-q(X,a) :- p(X), r(a).
-q(2,Y) :- d(Y).
-
-?- clause(p(1),BODY).
-yes BODY=true
-
-?- clause(p(X),true).
-yes X=1
-
-?- clause(q(X,Y), BODY).
-yes X=_1 Y=a BODY=p(_1),r(a);
-X=2 Y=_2 BODY=d(_2);
-no
-
-?- clause(HEAD,true).
-Error - invalid key to data-base
-```
-
-# Other amenities… Loading modules and libraries
-
-- Modern Prolog interpreters come equipped with a huge library of code.
-- To load a library:
-  ```prolog
-  use_module(library(XXX)).
-  ```
-- Example (SWI Prolog):
-  ```prolog
-  :- use_module(library(lists)).
-  ```
-  Load the pre-defined predicates for dealing with lists
-
-- library(aggregate)
-- library(ansi_term)
-- library(apply)
-- library(assoc)
-- library(broadcast)
-- library(charsio)
-- library(check)
+The final code snippet describes all the __tuples__ retrieved by the knowledge base that make the goal `father(X, Y)` true.
