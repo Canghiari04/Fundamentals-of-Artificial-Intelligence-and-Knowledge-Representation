@@ -25,10 +25,10 @@ The predicate `call` is considered to be a meta-predicate because:
     #### Example
     ```prolog
     p(a).
-    q(x) :- p(x).
+    q(X) :- p(X).
 
-    :- call(q(y)).
-    yes Y = a.
+    :- call(q(Y)).
+       yes Y = a.
     ```
     Asking for `q(y)`, it is unified with the clause `q(x)`. Our goal becomes `p(y)`, and `p(y)` is true if $Y$ is unified with constant `a`. The final answer is: `q(y)` is verified if $Y = a$.
 
@@ -40,7 +40,7 @@ The predicate `call` is considered to be a meta-predicate because:
     q(a).
 
     :- p(q(Y)).
-    yes Y = a.
+       yes Y = a.
     ```
 
 ### Example `if_then_else` Construct
@@ -155,12 +155,12 @@ r(7).
 The results of the following second-order queries are:
 ```prolog
 :- setof(X, p(X), S).
-    yes S = [0, 1, 2]
-    X = X
+   yes S = [0, 1, 2]
+   X = X
 
 :- bagof(X, p(X), L).
-    yes L = [1, 2, 0, 1]
-    X = X
+   yes L = [1, 2, 0, 1]
+   X = X
 ```
 
 As we can see, the set $S$ from `setof(X, P, S)` does not include repetitions, while `bagof(X, P, L)` returns a list that does.
@@ -168,29 +168,29 @@ As we can see, the set $S$ from `setof(X, P, S)` does not include repetitions, w
 Furthermore, these meta-predicates allow for the __conjuction__ of goals within their own scope.
 ```prolog
 :- setof(X, (p(X), q(X)), S).
-    yes S = [2]
-    X = X
+   yes S = [2]
+   X = X
 
 :- bagof(X, (p(X), q(X)), L).
-    yes L = [2]
-    X = X
+   yes L = [2]
+   X = X
 
 :- setof(X, (p(X), r(X)), S).
-    no
+   no
 
 :- bagof(X, (p(X), r(X)), L).
-    no
+   no
 ```
 
 The last two queries tell us that the Knowledge Base does not have any $X$ that satisfies the conjuction of goals `p(x), r(x)`.
 ```prolog
 :- setof(p(X), p(X), S).
-    yes S = [p(0), p(1), p(2)]
-    X = X
+   yes S = [p(0), p(1), p(2)]
+   X = X
 
 :- bagof(p(X), p(X), S).
-    yes S = [p(1), p(2), p(0), p(1)]
-    X = X
+   yes S = [p(1), p(2), p(0), p(1)]
+   X = X
 ```
 
 These meta-predicates can also retrieve the __terms__ that make our goal true. For instance, the query `:- setof(p(x), p(x), S)` returns the set of terms `p(X)` that makes the goal `p(X)` verified.
@@ -208,19 +208,19 @@ father(giovanni, giuseppe).
 We want to derive which individuals are fathers.
 ```prolog
 :- setof(X, Y^father(X, Y), S).
-    yes [giovanni, mario, giuseppe]
-    X = X
-    Y = Y
+   yes [giovanni, mario, giuseppe]
+   X = X
+   Y = Y
 ```
 
 The goal part uses a new __syntactic rule__, the __existential quantifier__ _Y^_. This allows us to retrieve the set of $X$ values such that there __exists__ a $Y$ that satisfies the goal `father(X, Y)`. If the existential quantifier is not used, the final result will be diplayed as multiple solutions, one for each unique $(X, Y)$ pair that makes the goal `father(X, Y)` true.
 ```prolog
 :- setof((X, Y), father(X, Y), S).
-    yes S = [(giovanni, mario), (giovanni, giuseppe),
-           (mario, paola), (mario, aldo),
-           (giuseppe, maria)]
-    X = X
-    Y = Y
+   yes S = [(giovanni, mario), (giovanni, giuseppe),
+          (mario, paola), (mario, aldo),
+          (giuseppe, maria)]
+   X = X
+   Y = Y
 ```
 
 The final code snippet describes all the __tuples__ retrieved by the Knoledge Base that make the goal `father(X, Y)` true.
@@ -244,17 +244,17 @@ father(giovanni,giuseppe).
 We want to define which individuals are father.
 ```prolog
 :- findall(X, father(X, Y), S)
-    yes S = [mario, giovanni, giuseppe]
-    X = X
-    Y = Y
+   yes S = [mario, giovanni, giuseppe]
+   X = X
+   Y = Y
 ```
 
 This code snippet is the same as:
 ```prolog
 :- setof(X, Y^father(X, Y), S)
-    yes S = [mario, giovanni, giuseppe]
-    X = X
-    Y = Y
+   yes S = [mario, giovanni, giuseppe]
+   X = X
+   Y = Y
 ```
 
 The meta-predicates `setof`, `bagof` and `findall` works also when the property to be verified is not a simple fact, but it is defined by rules.
@@ -275,9 +275,9 @@ The `findall` predicate returns the set of instances $X$ that satisfy the rule `
 
 ```prolog
 :- findall(X, p(X, Y), S)
-    yes S = [0]
-    X = X
-    Y = Y
+   yes S = [0]
+   X = X
+   Y = Y
 ```
 
 ## 6. Implication through setof
@@ -302,3 +302,49 @@ iterate :- setof(X, p(X), L), filter(L).
 filter([]).
 filter([H|T]):- call(q(H)), filter(T).
 ```
+
+## 8. Clause predicate
+As we already know, in Prolog terms and predicates share the same structure, therefore we can interchange them without any problem.
+
+Given the Knoledge Base.
+```prolog
+h.
+h :- b1, b2, ..., bn.
+```
+
+They correspond to the terms.
+```prolog
+(h, true)
+(h, ','(b1, ','(b2, ','( ...','(bn - 1, bn) ...))))
+```
+
+### Functionality
+1. It takes two arguments: `Head`, representing the head of the clause, and `Body`, representing the body of the clause.
+2. `Head` must be **bound** to a non-numeric term when the predicate is evaluated.
+3. `Body` can be a variable or a term describing the body of the clause. If the body of the clause is a **fact**, the `Body` term is unified with **true**.
+4. Its evaluation return **true** if `(Head, Body)` is unified with a clause stored within the database program.
+5. Its evaluation open more **choice points**, if more clauses with the same head are available.  
+
+Given the Knoledge Base.
+```prolog
+p(1).
+q(X, a) :- p(X), r(a).
+q(2, Y) :- d(Y).
+```
+```prolog
+?- clause(p(1), BODY).
+   yes BODY = true
+
+?- clause(p(X), true).
+   yes X = 1
+
+?- clause(q(X, Y), BODY).
+   yes X = 1 Y = a BODY = p(_1), r(a);
+   yes X = 2 Y = _2 BODY = d(_2);
+   no
+    
+?- clause(HEAD, true).
+   Error - invalid key to data-base
+```
+
+Let's take a look at the third query, `?- clause(q(X, Y), BODY)`. The first result shows that there exists a clause `q(X, Y)`, in which $X$ is unified with the value $1$ and $Y$ with the constant $a$. After the **disjunction** `;` (used for checking if there are other solutions), we get `X = 2` and `Y = _2`; this last unification expresses that $Y$ remains a **free variable**.
