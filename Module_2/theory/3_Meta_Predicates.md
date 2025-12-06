@@ -204,20 +204,98 @@ father(giovanni, giuseppe).
 
 We want to derive which individuals are fathers.
 ```prolog
-:- setof(X, Y^father(X,Y), S).
+:- setof(X, Y^father(X, Y), S).
     yes [giovanni, mario, giuseppe]
     X = X
     Y = Y
 ```
 
-The goal part uses a new __syntactic rule__, the __existential quantifier__ _Y^_. This allows us to retrieve the set of $X$ values such that there __exists__ a $Y$ that satisfies the goal `father(X, Y)`. If the exestential quantifier is not used, the final result will be diplayed as multiple solutions, one for each unique $(X, Y)$ pair that makes the goal `father(X, Y)` true.
+The goal part uses a new __syntactic rule__, the __existential quantifier__ _Y^_. This allows us to retrieve the set of $X$ values such that there __exists__ a $Y$ that satisfies the goal `father(X, Y)`. If the existential quantifier is not used, the final result will be diplayed as multiple solutions, one for each unique $(X, Y)$ pair that makes the goal `father(X, Y)` true.
 ```prolog
-:- setof((X, Y), father(X,Y), S).
-    yes S=[(giovanni, mario), (giovanni, giuseppe),
+:- setof((X, Y), father(X, Y), S).
+    yes S = [(giovanni, mario), (giovanni, giuseppe),
            (mario, paola), (mario, aldo),
            (giuseppe, maria)]
     X = X
     Y = Y
 ```
 
-The final code snippet describes all the __tuples__ retrieved by the knowledge base that make the goal `father(X, Y)` true.
+The final code snippet describes all the __tuples__ retrieved by the Knoledge Base that make the goal `father(X, Y)` true.
+
+## 5. Findall predicate
+The `findall` meta-predicate returns the list $S$ of instances $X$ for which predicate $P$ is true. If there is no $X$ satisfying $P$, the meta-predicate returns an empty list. 
+
+Its behavior is essentially equal to the __existential quantifier__, it searches for the list $S$ of instances $X$ such that there exists $Y$ that satisfies the predicate $P$.
+
+### Example
+
+Given the Knowledge Base:
+```prolog
+father(mario,aldo).
+father(mario, paola).
+father(giovanni,mario).
+father(giuseppe,maria).
+father(giovanni,giuseppe).
+```
+
+We want to define which individuals are father.
+```prolog
+:- findall(X, father(X, Y), S)
+    yes S = [mario, giovanni, giuseppe]
+    X = X
+    Y = Y
+```
+
+This code snippet is the same as:
+```prolog
+:- setof(X, Y^father(X, Y), S)
+    yes S = [mario, giovanni, giuseppe]
+    X = X
+    Y = Y
+```
+
+The meta-predicates `setof`, `bagof` and `findall` works also when the property to be verified is not a simple fact, but it is defined by rules.
+
+### Example 
+
+Given the Knowledge base.
+```prolog
+p(X, Y) :- q(X), r(X).
+
+q(0).
+q(1).
+r(0).
+r(2).
+```
+
+The `findall` predicate returns the set of instances $X$ that satisfy the rule `p(X, Y) :- q(X), r(X)`.
+
+```prolog
+:- findall(X, p(X, Y), S)
+    yes S = [0]
+    X = X
+    Y = Y
+```
+
+## 6. Implication through setof
+Let's suppose we have a Knowledge Base containing facts about `father(X, Y)` and `employee(Y)`. We want to verify if it is true that for every $Y$ for which `father(X, Y)` holds, then $Y$ is an _employee_ (so, basically we are asking if exists $Y$ such that $X$ is the father of $Y$ and it is an _employee_). 
+
+In logical terms, this query can be seen as a simple implication. $$father(X, Y) \rightarrow employee(Y)$$
+
+```prolog
+imply(Y) :- findall(Y, father(X, Y), S), verify(S).
+
+verify([]).
+verify([H|T]) :- employee(H), verify(T).
+```
+First of all, `findall(Y, father(X, Y), S)` returns a list $S$ containing all the sons already present in the Knoledge Base (remember: the left-most part of the clause is always evaluated first by the Prolog interpreter). The same list $S$ is used to verify if all the instances $Y$ are _employee_. If only one of them is not an _employee_, the whole clause `imply(Y)` fails.
+
+## 7. Iteration through setof
+Given a Prolog program, we can execute a procedure `q` on each element for which `p` is true.
+
+```prolog
+iterate :- setof(X, p(X), L), filter(L).
+
+filter([]).
+filter([H|T]):- call(q(H)), filter(T).
+```
