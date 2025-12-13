@@ -1,0 +1,20 @@
+A \textbf{linear planner} formulates a planner problem as a search in the state space using classical search strategies. The search algorithm could proceed in two ways:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Forward}. The search starts from the initial state and goes forward until it finds a state that is a superset of the goal state, in other words the state found contains the properties that describe the goal state.
+    \item \textbf{Backward}. The search starts from the goal state and proceeds backward until it finds a state that is a subset of the initial state. \vspace{3.5pt}
+    
+    When the search process follows the backward way, it uses the \textbf{goal regression} technique: it is a mechanism to reduce a goal in subgoals during the search by applying rules. The general rule is described as follows.
+
+    \begin{definition}
+        The regression $G$ through $R$ is:
+        \begin{itemize}[nosep]
+            \renewcommand{\labelitemi}{-}
+            \item $[G,R] = true$ if $G \in \textit{Add List}$, the regression of $G$ by $R$ is $true$ iif $G$ belongs to the list of properties that becomes true after the execution of the function.
+            \item $[G,R] = false$ if $G \in \textit{Delete List}$, so it's false if the condition $G$ belongs to the list of fluents that becomes false after the execution of the action. 
+            \item $[G,R] = G$ otherwise.
+        \end{itemize}
+    \end{definition}
+\end{itemize}
+
+Why don't we use logic for solving planning problems?

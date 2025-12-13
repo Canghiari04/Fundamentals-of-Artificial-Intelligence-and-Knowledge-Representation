@@ -1,0 +1,88 @@
+Many AI problems can be seen as \textbf{constraint satisfaction problems}, in other words, find a state of the problem that meets a given set of constraints. In fact, in some
+cases, we cannot take decisions freely but we have to respect some given rules. \vspace{3.5pt}
+
+We have already seen one example of constraint satisfaction: the eight queens problem. The aim of the 8 queens problem consists in placing eight queens in a chessboard in order
+to avoid mutual attacks. \vspace{3.5pt}
+
+For solving this kind of problem, several model formulations can be used:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{}
+    \item $1^{st}$ Model.
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemii}{-}
+        \item The domain of the possible values is: $[0, 1]$.
+        \item Every cell $(i,j)$ of the $N \times N$ board is associated with a binary value $x_{i,j}$.
+        \item If the variable $x_{i,j}$ is equal to $1$, it means that this position is currently assigned to a queen; if the value is $0$, the cell is free. 
+        \item The \textbf{constraint} is the sum in any possible row, column or diagonal cannot be greater than $1$.
+    \end{itemize} 
+    \item $2^{nd}$ Model.
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemii}{-}
+        \item The $N$ queens are represented by $N$ variables: $x_1, x_2, ..., x_N$.
+        \item The domain of the variables is the set of integers between $1$ and $N$, which correspond to the row occupied.
+        \item The subscript of the variable $x_j$ refers to the column occupied by the corresponding queen. For instance, the ordering $\langle 1, 6, 2, 5, 7, 5, 8, 3\rangle$ determines that the queen in the first column $x_1$ is situated in the first row, the queen in the second column $x_2$ is in the sixth row and so on.
+    \end{itemize} 
+    \item This model requires four different constraints:
+    \begin{itemize}[nosep]
+        \renewcommand{\labelitemii}{-}
+        \item $1 \le x_i \le N$ for $1 \le i \le N$.
+        \item $x_i \neq x_j$ for $1 \le i < j \le N$.
+        \item $x_i \neq x_j + (j - i)$ for $1 \le i < j \le N$.
+        \item $x_i \neq x_j - (j - i)$ for $1 \le i < j \le N$.
+    \end{itemize} \vspace{3.5pt}
+
+    The first constraint requires that the values of the variables of the problem are integers between $1$ and $N$, where those values determine in which rows 
+    the queens are located. The next three constraints define relationships between the variables and, in particular, involving two variables at the time. \vspace{3.5pt}
+
+    In addition, we can improve the description saying: the \textbf{second constraint} requires that two queens do not share the same line. The \textbf{third} and the \textbf{fourth constraint}
+    concern the positions on the two diagonals starting from the initial box.
+\end{itemize} 
+
+An other example of constraint problem is \textbf{scheduling}: assign tasks to resources at given time. Another one is the \textbf{map coloring} problem: we need to color portions of a map,
+characterized by a number, in such a way that two contiguos regions are colored with different colors. \vspace{3.5pt}
+
+\begin{center}
+    % \includegraphics[width=0.5\textwidth]{8}    
+\end{center}
+
+What do all these problems have in common? Every \textbf{Constraint Satisfaction Problem} is defined on a finite set of variables:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item $X_1, X_2, ..., X_n$ decisions that we have to take.
+    \item $D_1, D_2, ..., D_n$ domains of the possible values.
+    \item A set of constraints.
+\end{itemize}
+
+A constraint $c(X_{i1}, X_{i2}, ..., X_{ik})$ between $K$ variables is a subset of the \textbf{cartesian product} $D_{i1} \times D_{i2} \times ... \times D_{ik}$ that 
+specifies which values of the variables are compatible with each other.
+\begin{example}
+    i.e. Cartesian product of domains. \vspace{3.5pt}
+
+    Given \vspace{3.5pt}
+
+    \begin{center}
+        $D_1 = \{1, 2, 3\}$ and $D_2 = \{1, 2, 3\}$
+    \end{center} \vspace{3.5pt}
+
+    the cartesian product of the two domains is a set of tuples containing the combination of the domains' values. \vspace{3.5pt}
+
+    \begin{center}
+        $Result = \{(1,1), (1,2), (2,1), (1,3), (3,1), ...\}$
+    \end{center} \vspace{3.5pt}
+
+    A possible constraint would be: the $X$ values must be greater than the $Y$ values, $X > Y$. Therefore, we have to select all the tuples that have the first element greater than the second one.
+\end{example}
+
+\textbf{CSPs} can be solved through \textbf{search strategies}, but we have to define a \textit{"smart way"} to search the solution inside the \textbf{search space}. In an 
+n-variables problem in which all the domains have the same cardinality $d$, the number of leaves of the search tree is equal to $d^n$. We can use \textit{constraints}
+to remove from the search space (the set of all the sequences of actions) useless states that are obviously wrong. \vspace{3.5pt}
+
+If we do an exhaustively search the problem becomes \textbf{exponential}, we have to erase paths that are in conflict with the set of constraints. There are two possible 
+approaches:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Propagation Algorithms}. \\ A \textit{priori pruning} technique, that uses constraints between the variables of the problem to \textbf{reduce the search space}.
+    \item \textbf{Consistency Tecniques}. \\ Based on the propagation of constraints in order to derive a \textbf{simpler problem} than the original one.
+\end{itemize}  
+
+\dots
