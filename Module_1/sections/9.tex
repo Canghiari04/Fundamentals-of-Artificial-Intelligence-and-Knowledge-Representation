@@ -40,10 +40,9 @@ For solving this kind of problem, several model formulations can be used:
 
 An other example of constraint problem is \textbf{scheduling}: assign tasks to resources at given time. Another one is the \textbf{map coloring} problem: we need to color portions of a map,
 characterized by a number, in such a way that two contiguos regions are colored with different colors. \vspace{3.5pt}
-
 \begin{center}
-    % \includegraphics[width=0.5\textwidth]{8}    
-\end{center}
+    \includegraphics[width=0.5\textwidth]{img/img34.png}    
+\end{center} \vspace{3.5pt}
 
 What do all these problems have in common? Every \textbf{Constraint Satisfaction Problem} is defined on a finite set of variables:
 \begin{itemize}[nosep]
@@ -85,4 +84,104 @@ approaches:
     \item \textbf{Consistency Tecniques}. \\ Based on the propagation of constraints in order to derive a \textbf{simpler problem} than the original one.
 \end{itemize}  
 
-\dots
+We start from propagation algorithms. The main idea about these techniques is to check which are the future constraints according to the current assignment already done.
+Let's suppose we have a list of variables described as follows:
+\begin{center}
+    $X_1, X_2, ..., X_{i-1}, X_i, X_{i+1}, ..., X_N$
+\end{center}
+where:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item $X_1, X_2, ..., X_{i-1}$ are variables already assigned.
+    \item $X_i$ is the variable taken into account for the assignment.
+    \item $X_{i+1}, ..., X_{N}$ are free variables, waiting for an assignment. 
+\end{itemize}
+
+As soon as we have done the \textbf{current assignment} we remove all the failures from that assignment. We can remove all the possible failures by:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Forward checking}. \\ After each assignment of variable $X_i$, the forward checking propagates all constraints involving $X_i$ and all the future variables. If we end up with an \textbf{empty domain} (no values left for assignment still available in order to satisfy the set of constraints) the forward checking fails and backtracks.
+    \item \textbf{Look ahead}. \\ Look ahead checks the existence of values that are compatible with the constraints about only the non-instantiated variables. It does this kind of reasoning: \textit{while assigning $X_i$, there exists a support value of $X_i$ in $X_{i+1}, ..., X_N$ such that the assignment already done does not cause any violation?}
+\end{itemize}
+
+In addition, look ahead strategy is divided into: 
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Partial Look Ahead}. \\ For each value in the domain of $X_i$ it checks if in the domain of not yet instantiated variables $X_{i+1}, ..., X_N$ there is a value compatible with it. 
+    \item \textbf{Full Look Ahead}. \\ For each value in the domain of $X_i$ it checks if in the domain of not yet instantiated variables $X_{k+1}, ..., X_{i-1}$, $X_{i+1}, ..., X_N$ there is a value compatible with it.
+\end{itemize}
+\begin{example}
+    i.e. Look ahead examples. \vspace{3.5pt}
+
+    Given this set of variables \vspace{3.5pt}
+    \begin{center}
+        $X_0$ $X_1$ $X_2$ $X_3$
+    \end{center} \vspace{3.5pt}
+    with domains $X_1, X_2, X_3 :: [1,2,3]$ and given the constraint \vspace{3.5pt}
+    \begin{center}
+        $X_0 < X_1 < X_2 < X_3$
+    \end{center} \vspace{3.5pt}
+    find out all the compatible assignments using the two strategies of look ahead. \vspace{3.5pt}
+
+    Starting from \textbf{partial look ahead}, for each value in the domain of $X_1$ it checks if there exists at least one value in the domain of $X_2$ and at least one value inside the domain of the variable $X_3$. If it does not exist we delete the value from the domain of $X_1$. For each value in the domain of $X_2$ variable it checks if there exists at least one value in the domain of variable $X_3$ compatible. \vspace{3.5pt}
+    \begin{center}
+        \begin{tabular}{l}
+                $X_1 :: [1,2]$ \\
+                $X_2 :: [1,2]$ \\ 
+                $X_3 :: [1,2,3]$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+
+    \textbf{Full look ahead}, beside the checks performed by partial look ahead, checks also for each value that belongs to the domain of variable $X_2$ if there is at least a value compatible inside the domain of variable $X_1$ and for each value in $X_2$ checks if there exists one value compatible in the domain of the variable $X_3$. Finally, it does a check for each value of $X_3$ if there exists a compatible value either in the domain of the variables $X_1$ and $X_2$. \vspace{3.5pt}
+    \begin{center}
+        \begin{tabular}{l}
+                $X_1 :: [1,2]$ \\
+                $X_2 :: [2]$ \\ 
+                $X_3 :: [3]$
+        \end{tabular}
+    \end{center} \vspace{3.5pt}
+\end{example}
+
+The order of variable selection and value selection can affect the efficiency of CSP resolution. The \textbf{heuristics} can then act on these two degrees of freedom to try to
+ensure the achievement of a good solution in a reasonable time for even the most complex problems. The heuristics can be classified into:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Variable selection heuristics}. \\ It answers to the query: \textit{which should be the next variable to instantiate}? The most commonly heuristics are the \textbf{first-fail} (selects always the variable with the smallest domain) and the \textbf{most-constrained principle} (chooses the variable appearing in the largest number of constraints). Usually, the most used is the \textbf{first-fail heuristic}.
+    \item \textbf{Value selection}. It asks: \textit{what value to assign to the selected variable}? There are no formalized rules about value selection; usually, we follow the assignment of the most promising value.
+\end{itemize}
+
+A further classification is as follows:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Static heuristics}. \\ Before the search process, we have already a given order of the variables.
+    \item \textbf{Dynamic heuristics}. \\ Every time an assignment is done, so the domains are just changed, we check the variable with the smallest domain.
+\end{itemize}
+
+A CSP can be seen as a \textbf{constraint graph}, where nodes are variables and the links connect variables that partecipate to a constraint. The simplest kind of CSP involves
+variables that have a finite domain. The \textit{8 queens problem} is one of them, where the variables $Q_1, ..., Q_8$ are the positions of each queen in columns $1, ..., 8$ and each variable
+has the domain $D_i = \{1,2,3,4,5,6,7,8\}$. \vspace{3.5pt}
+
+In CSP an algorithm can perform the search process or do a constraint propagation: reducing the number of legal moves using constraints. It's more efficient than generate and create 
+the whole tree and then remove parts of it that does not match the set of constraints. \vspace{3.5pt}
+
+The other key idea about CSPs is the notion of \textbf{local consistency}. We enforce local consistency inside the constraint graph such that inconsistent values are deleted 
+throughout the graph. To guarantee local consistency the graph should respect:
+\begin{itemize}[nosep]
+    \renewcommand{\labelitemi}{-}
+    \item \textbf{Node consistency}. \\ A single variable (that matches a node inside the graph) is \textbf{node-consistent} if all the values in the variable's domain satisfy the variable's unary constraints. For instance, if we assume a variant of the map coloring problem, such as the first region cannot be colored \textit{green} and the starting domain is \textit{\{green, blue, red\}}, we can make the node consistent simply eliminating the \textit{green} color from the variable's domain.
+    \item \textbf{Arc consistency}. \\ In this case, we handle the binary constraint between variables. A variable in a CSP is \textbf{arc-consistent} if every value in its domain satisfies the variable's binary constraints. More formally, taking two variables $X_i$ and $X_j$, we said \textit{$X_i$ is arc-consistent with $X_j$} if: \vspace{3.5pt}
+    \begin{center}
+        $\forall v \in D_i$ $\exists z \in D_j$ s.t. the binary constraint $(X_i,X_j)$ is satisfied.
+    \end{center} \vspace{3.5pt}
+\end{itemize}
+
+The consistency is obtained by the iteration of the \textbf{full look ahead} approach. The arc consistency, as for node consistency, is applied before the search process and 
+while the solver is searching. By the way, reaching local consistency does not imply \textbf{feasible solutions}. For this main reason, we can describe a higher level of 
+consistency, like \textbf{path consistency}. Path consistency reinforces the binary constraints by using implicit constraints that are inferred by looking at triples of 
+variables. \vspace{3.5pt} 
+
+Given a binary constraint $(X_i, X_j)$ and a third variable $X_m$, $(X_i, X_j)$ is \textbf{path consistent} with respect to $X_m$, if for every assignment $X_i$ and $X_j$ that makes consistent the relation $(X_i,X_j)$, there exists
+an assignment $X_m$ such that $(X_i,X_m)$ and $(X_j,X_m)$ are satisfied. More formally: \vspace{3.5pt}
+\begin{center}
+    $\forall v \in D_i$ and $\forall z \in D_j$ that makes $(X_i, X_j)$ consistent, $\exists x \in D_m$ s.t. the constraints $(X_i,X_m)$ and $(X_j,X_m)$ are satisfied
+\end{center}

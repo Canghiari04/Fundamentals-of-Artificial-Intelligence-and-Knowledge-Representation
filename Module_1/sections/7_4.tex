@@ -21,7 +21,7 @@ Everything which is not in the \textbf{Add} and \textbf{Delete list} is unchange
 As we already said, STRIPS is based on backward search and it relies on two data structures: 
 \begin{itemize}[nosep]
     \renewcommand{\labelitemi}{-}
-    \item \textbf{Goal stack}. \\ A FIFO queue, so First In First Out data structure, initialized with the goals to be achieved and proceeding backward.
+    \item \textbf{Goal stack}. \\ A LIFO queue, so Last In First Out data structure, initialized with the goals to be achieved and proceeding backward.
     \item \textbf{Current state}. \\ A logic description about the initial state. Unlike the goal stack, it proceeds forward until the goal state is reached.
 \end{itemize} 
 \begin{example}
