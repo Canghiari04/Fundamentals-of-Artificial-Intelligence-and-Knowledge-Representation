@@ -13,6 +13,7 @@ But, what is a clause? A clause is set of different logic terms, which typically
 - __Compound terms__: known also as __structures__, they are defined similarly to a traditional function $f(t_1, t_2, ..., t_n)$, where $f$ is a __function symbol__ and $t_1, t_2, ..., t_n$ are __terms__.
 
 These definitions may seem difficult to understand. Let's consider a more intuitive approach with examples:
+
 ```prolog
 X, X1, Goofey, _goofey, _x, _ % variables, the underscore symbol "_" is usually used for variables.
 
@@ -43,20 +44,27 @@ The comma symbol `,` represents the logical __conjuction__ $\land$. The neck sym
 ## 2. Declarative and Procedural Interpretations
 Every Prolog program has two main interpretations:
 - __Declarative interpretation__: the declarative interpretation explains __what__ the program means. Variables within a clause are universally quantified. For each fact:
+  
     ```prolog
     p(t1, t2, ..., tn).
     ```
+
     If $X_1, X_2, ..., X_n$ are the variables appearing in $t_1, t_2, ..., t_n$ the intended meaning is: `∀X1, ∀X2, ..., ∀Xn` the fact `p(t1, t2, ..., tn)` is verified.
 
     The meaning changes when we discuss __rules__. For each rule: 
+
     ```prolog
     A :- B1, B2, ..., Bn.
     ``` 
+
     If $Y_1, Y_2, ..., Y_m$ are the variables appearing __only__ in the body of the rule the intended meaning is: `∀X1, ∀X2, ..., ∀Xn ((∃Y1, ∃Y2, ..., ∃Ym (B1, B2, ..., Bn))) → A))`, in other words, for each variable $X_i$, if there exists variable $Y_j$ the head of the clause $A$ is verified. Let's see an example for a better understanding.
+
     ```prolog
     happyperson(X) :- has(X, Y), car(Y) % for each person X, if exists a car Y (anyone) that X holds, X is a happy person.
     ```
+
     If $X_1, X_2, ..., X_n$ are the variables appearing in __both__ the body and the head of the rule, the intended meaning is: `∀X1, ∀X2, ..., ∀Xn ∀Y1, ∀Y2, ..., ∀Ym ((B1, B2, ..., Bn) → A)`, in other words, for each variable $X_i$ and variable $Y_j$, that make the body true, the head of clause $A$ is also verified.
+
     ```prolog
     father(X, Y). % defining the facts of the universe described.
     mother(X, Y).
@@ -64,12 +72,16 @@ Every Prolog program has two main interpretations:
     grandfather(X, Y) :- father(X, Z), father(Z, Y) % rules heavily dependent on facts.
     grandmother(X, Y) :- mother(X, Z), mother(Z, Y)
     ```
+
 - __Procedural interpretation__: the procedural interpretation of a Prolog program explains __how__ the system executes a goal, in contrast to the declarative interpretation, which only explains what the program means. A __procedure__ is a set of clauses with the same predicate name in the head and the same number of parameters, also called __arity__. Prolog adopts the __SLD resolution process__ and has two main charateristics:
     - It selects the __left-most__ literal in any query.
+        
         ```prolog
         ? :- G1, G2, ..., Gn. % starting from G1 and then move on.
         ```
+
     - It performs __Depth-First search (DFS)__ strategy. Based on the selected search strategy, the order of the clauses in the program may greatly affect termination and, consequently, the __completeness__. DFS is a search strategy that does not guarantee completeness if the search tree contains __loopy path__. 
+        
         ```prolog
         p :- q,r.
         p.
@@ -78,7 +90,9 @@ Every Prolog program has two main interpretations:
         ?- p.
         loopy path
         ```
+        
         In this toy example the fact `p.` comes after the rule `p :- q, r.`. If we ask the Prolog interpreter the query `?- p.`, the program will enter a loopy path, failing to solve it. Defining the correct order, the query will be immediately solved.
+
         ```prolog
         p.
         p :- q,r.
@@ -87,13 +101,16 @@ Every Prolog program has two main interpretations:
         ?- p.
         yes
         ```
+        
         There may exist multiple answer for a query. The way to retrieve them is easy: after getting an answer, we can force the interpreter to search for the __next solution__. Pratically, this means asking the procedure (a set of clauses with the same head and arity) to explore the remaining part of the __search tree__. In Prolog, the standard way involves using the operator `;`.
+        
         ```prolog
         :- sister(maria, W).
         yes W = giovanni;
         yes W = annalisa;
         no
         ```
+        
         The knowledge `giovanni, annalisa` comes from the previously defined facts.
 
 ## 3. Royal Family Exercise
@@ -102,10 +119,13 @@ Every Prolog program has two main interpretations:
 Arithmetic in Prolog is not a standard logical feature; it relies on special __built-in predicates__ to force its evaluation. In Prolog, an expression like `2 + 3` is just a __term__, not the numeric value `5`. For instance, the interpreter will associate the structure `+ (2, 3)` with the fact `p(2 + 3).`. 
 
 However, the special and predefined predicate `is` forces the evaluation of any mathemical expression. Its syntax is simple: define the variable, then the predicate `is` and finally the expression to evaluate.
+
 ```prolog
 T is Expr
 ```
+
 We previously mentioned that Prolog is based on the SLD resolution process, which always evaluates the left-most literal. But this is not the case with `is`. The predicate `is` forces the interpreter to evaluate the right-most literal (the mathematical expression), and the final result will be associated to the variable in the next step.
+
 ```prolog
 ?- X is 2 + 3.
 yes X = 5
@@ -117,22 +137,29 @@ yes X1 = 5, X2 = 148.143, X = 742.065
 no
 (or Instantion Fault, depending on the prolog system)
 ```
+
 ```prolog
 ?- X is 2 + 5, X is 4 + 1.
 yes X = 5
 ```
+
 In this example, the second goal becomes:
+
 ```prolog 
 :- 5 is 4 + 1.
 ```
+
 $X$ has been instantiated by the evaluation of the first goal. As before, the __order__ of the goal is very important:
+
 ```prolog
 (a) :- X is 2 + 3, Y is X + 1.
 (b) :- Y is X + 1, X is 2 + 3.
 ```
+
 Goal `(a)` succeeds and returns `yes X = 5, Y = 6`; goal `(b)` fails due to the incorrect order defined (the variable Y is processed before the evaluation of the mathematical expression for $X$).
 
 A term representing an expression is evaluated __only__ if it is the argument of the predicate `is`. For instance:
+
 ```prolog
 p(a, 2 + 3 * 5).
 p(b, 2 + 3 + 5).
@@ -143,13 +170,17 @@ q(X, Y) :- p(a, Y), X is Y.
 ?- q(X, Y)
 yes X = 17 Y = 2 + 3 * 5 (Y=+(2, *(3, 5)))
 ```
+
 Initially, the predicate `p(a, Y)` is unified with the fact `p(a, 2 + 3 * 5).`. The association defines the atomic structure `+(2 *(3, 5))`. The second step involves the evaluation of the mathematical expression `X is 2 + 3 * 5`. (why do we define the constant `a` inside the fact __p__? As we already know, a procedure is a set of clauses with same head and arity; the constant `a` allow us to distinguish which predicate we are dealing with!)
 
 Additionally, it's also possible to compare expressions results using the standard __relational operators__, which are: `>, <, >=, =<, ==, =/=`. The last two operators are named respectvely __arithmetically equal to__ (`==`) and __arithmetically not equal to__ (`=/=`). The syntax is pretty similar to the predicate `is`:
+
 ```prolog
 Expr1 REL Expr2
 ```
+
 `REL` is the relational operator, `Expr1` and `Expr2` are the evaluated expressions. It's __crucial__ that both expressions are __completely instantiated__ before the comparison: otherwise the Prolog program will fail.
+
 ```prolog
 p(a, 2 + 3 * 5).
 p(b, 2 + 3 + 5).
@@ -167,7 +198,9 @@ comparison_expressions(Type1, Type2, Result):-
 
 ?- comparison_expressions(a, b, R).
 ```
+
 Now we have all the necessary ingredients to build __math functions__ in Prolog. Given any function $f$ with a certain arity $n$, we can implement it through a $(n + 1)$ predicate. Given the function $f:x_1, x_2, ..., x_n \rightarrow y$, it is represented by a predicate as follows: `f(X1, X2, ..., Xn, Y)`. We must always indicate the result variable `Y` within the predicate's scope so the interpreter knows exactly what the output will be.
+
 ```prolog
 fatt(0, 1).
 fatt(N, Y) :- 
@@ -176,12 +209,14 @@ fatt(N, Y) :-
     fatt(N1, Y1),
     Y is N * Y1.
 ```
+
 Before moving on, it's crucial to understand its behavior and how it truly works. The example above uses the __recursion__  to solve the `factorial problem`: it begins by constructing the search tree until it reaches the leaf nodes `fact(0, 1)` and then moves towards the root node, computing the mathematical expression at each step.
 
 ## 5. Iteration and Recursion
 In Prolog, __iteration__ as in `while`, `foreach` or `repeat` __does not exist__. However, we can simulate iterative behavior through __recursion__, as already done in the `factorial example`. Prolog models iteration by defining a predicate (remember: a predicate is a set of clauses, not just one!) with two essential parts:
 - __Base case__: a non-recursive clause, generally a __fact__, that defines the __termination condition__ of the process.
 - __Recursive case__: a rule that performs a single step of the operation and then calls itself with modified arguments, moving the process closer to the base case.
+  
 ```prolog
 print(1) :- write(1), nl.
 print(N) :- 
@@ -190,9 +225,11 @@ print(N) :-
     N1 is N - 1,
     print(N1).
 ```
+
 The `print(N)` predicate is different from the `factorial(N, Y)` predicate; where the interpreter completed the search tree __before__ computing the expressions, here it immediately shows the results through the `write` predicate. 
 
 Even though any well-structured recusion works fine, a spefic type is more desirable for efficiency: __tail recursion__. A function is __tail-recursive__ if the recursive call is the __most external call__ in its definition. There are many cases where a non-tail recursion can be re-written as a tail recursion.
+
 ```prolog
 fatt1(N, Y):- fatt1(N, 1, 1, Y).
 fatt1(N, M, ACC, ACC) :- M > N.
@@ -201,6 +238,7 @@ fatt1(N, M, ACCin, ACCout) :-
     M1 is M + 1,
     fatt1(N, M1, ACCtemp, Accout).
 ```
+
 The factorial is computed using an __accumulator__. An accumulator is an extra argument passed to the predicate, which holds the running or partial result of the computation at each step. The main advantage is that the evaluation of the mathematical expression is done __before__ the recursive call, avoiding __backtracking__ and mantaining a constant __space complexity__.
 
 ## 6. Iteration Exercises
@@ -259,6 +297,7 @@ Since the __head-tail notation__ might be quite difficult to use, the term `.(T,
 Even in this case, the recursive notation `[T | List]` is rather __verbose__. Therefore, we can use a more simplified syntax, such as `[a, b, c]` for the term `[a | [b | [c | [ ]]]]`. 
 
 The greatest power about lists in Prolog comes from the easy way to manipulate them using an __unification algorithm__. This provides a complete method for accessing and deconstructing list content.
+
 ```prolog
 p([1, 2, 3, 4, 5, 6, 7, 8, 9]).
 
@@ -274,6 +313,7 @@ yes X = 1 Y = 2 Z = [3, 4, 5, 6, 7, 8, 9]
 :- p([_|X]).
 yes X = [2, 3, 4, 5, 6, 7, 8, 9]
 ```
+
 This code snippet represents some examples about list unification processes. In particular, it's important to focus on the last predicate shown: we used the __anonymus symbol__ `_` to create a new list containing all the previous values __except__ the first one. The anonymus symbol allows us to "ignore" the first value of the current data structure.
 
 List operations are inherently recursive, using the `[Head|Tail]` data structure to process one element at a time until the base case `[]` (empty list) is reached. Many list-related predicates can be written using this rule as the main principle.
@@ -281,6 +321,7 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
 1. __isList__
 
     `isList` checks if an argument is a list. The base case is the empty list `[]`, and the recursive part checks if the tail is also a list. 
+
     ``` prolog
     isList([]).
     isList([X|Tail]) :- isList(Tail).
@@ -295,6 +336,7 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
 2. __member__
 
     `member` checks if an element $X$ is in a given list. The base case is when the element coincides with the head of the list, and the recursive case checks if the element is in the tail of the list.
+
     ```prolog
     member(X, [X| ]).
     member(X, [_|Tail]) :- member(X, Tail).
@@ -315,6 +357,7 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
 3. __length__
 
     `length` defines the size of the list. It takes a list as first argument and the number of elements contained in the list as the second argument.
+
     ```prolog, 0).
 ], N) :- as the second argument 
         length(Tail, NT),
@@ -405,6 +448,7 @@ Any execution process is built upon two stacks:
 When a goal succeeds, Prolog might still have open choice points. When a goal fails, Prolog backtracks to the most recent choice point to try an alternative branch.
 
 ### Example
+
 ```prolog
 (cl1) a :- p, b.
 (cl2) a :- r.
@@ -456,6 +500,7 @@ The real meaning is that all choices made about proving the predicate `p` and li
 If the remaining part of the clause fails, the literals after the cut operator $q_{i+1}, q_{i+2}, ..., q_n$, the entire rule will fail.
 
 The real effect is that CUT operator __removes branches of the search tree__. 
+
 ```prolog
 a(X,Y) :- b(X), !, c(Y).
 a(0,0).
@@ -469,11 +514,13 @@ yes X=1 Y=1;
     X=1 Y=2;
 no
 ```
+
 As we can see from the example, the interpreter will always take the first fact of `b`, which is `b(1).`. The alternatives `b(2)` and `a(0, 0).` are simply ignored (remember: the CUT operator affects the predicates defined __before__ the cut, but also __alternative clauses__ for the predicate in which it appears!). 
 
 Why do we need the CUT operator? It may seem like a counterintuitive tool since it doesn't consider all possibilities and does not guarantee completeness. The real answer is that sometimes using the CUT operator allows us to __simplify__ our Prolog program.
 
 ### Example
+
 ```prolog
 p(X) :- q(X), !, r(X).
 q(1).
@@ -483,9 +530,11 @@ r(2).
 :- p(X).
 no
 ```
+
 This example fails because the only match for `q(X)` that Prolog finds first is 1. The variable $X$ becomes 1. Since the fact is `r(2).`, the predicate `r` does not have any match for 1, so the query with $X = 1$ fails. Without the cut operator, or by defining `q(2).` before `q(1).`, the query $X = 2$ would succeed after backtracking.
 
 The first use of the CUT operator is to achieve __mutually exclusive conditions__ between two clauses. In any programming languages, we would typically write the mutual exclusive condition as:
+
 ```python
 if a then b else c
 ```
@@ -528,6 +577,7 @@ If the condition $H > 0$ in the second clause fails, the CUT operator is never e
 There is a key point in Prolog that we haven't discussed yet: Prolog is based on own clauses, which are a subset of First Order Logic. We don't assume the whole scope of First Order Logic, we focus on a smaller fragment of it. However, this fragment allow us to have the same expressive power, even though some things cannot be written in Prolog.
 
 As the definition states, Prolog allows only definite clauses, which __cannot contain negative literals__. The standard SLD resolution process is designed to derive __positive__ informations and is incapable to derive __negative__ information. If we provide a simple knowledge base such as:
+
 ```prolog
 person(mary).
 person(caterina).
@@ -535,12 +585,14 @@ person(annalisa).
 
 dog(meave).
 ```
+
 Intuitively, we can derive that `meave` is not a person. But what about Prolog? Is it capable of defining if `meave` is __NOT__ a person? From the previous knowledge base, Prolog cannot derive that `meave` is not a person since it is not explicitly written inside the program
 
 ### Closed World Assumption
 The __Closed World Assumption__ (our knowledge is closed with the respect to the World) is one of the main concept about __Database Theory__ that formalizes the notion that `if it's not recorded, it's false`.
 
 Back to the previous example:
+
 ```prolog
 person(mary).
 person(caterina).
@@ -548,16 +600,19 @@ person(annalisa).
 
 dog(meave).
 ```
+
 Can we prove that `mary` is a dog? The real answer is __NO__, but using CWA, we could infer $$\neg dog(mary).$$
 
 In practical terms, the Closed World Assumption might be either a good or a bad way to model our world; it relies expecially about the concepts we are expressing. In Prolog  the Closed World Assumption has been chosen as the primary way to treat the __knowledge base__. 
 
 ### CWA Example
+
 ```prolog
 capital(rome).
 city(X) :- capital(X).
 city(bologna).
 ```
+
 From this instance, we know for sure that if $X$ is a `capital`, it is also a `city`.
 
 Using the Closed World Assumption, we can infer $$\neg capital(bologna)$$ since we don't have this kind of information in our knowledge base. The interpreter will try to solve the query `:- capital(bologna)`, it will fail, allowing us to derive that `bologna` is not a capital. 
@@ -569,10 +624,12 @@ Additionally, First Order Logic is __undecidable__: if a formula _A_  is not a l
 ##
 
 ### Example
+
 ```prolog
 city(rome) :- city(rome).
 city(bologna).
 ```
+
 The SLD resolution process cannot prove in a finite time that `city(rome)` predicate is not a logical consequence of our program. Since SLD uses the Depth-First strategy to explore the state space, the interpreter will end up in a __loopy path__ because it tries to solve the goal using the recursive rule.
 
 Since __CWA__ sometimes fails to prove that a predicate is not a logical consequence of our program, we restrict the Closed World Assumption to those atoms whose proof terminates in a finite time.
@@ -597,6 +654,7 @@ $L_1, ..., L_{i - 1}, L_{i + 1}, ..., L_m$
 The selection of ground negative literals is necessary to ensure __completeness__ and __correctness__ of SLDNF rule.
 
 ### SLDNF Example
+
 ```prolog
 capital(rome).
 chief_town(bologna)
@@ -605,6 +663,7 @@ city(X):- chief_town(X).
 
 :- city(X), ~capital(X).
 ```
+
 <img src="../img/img7.png" style="display: block; width: 75%; margin: 25px auto;">
 
 Here, we are asking if exists $X$ such that is a `city` but not a `capital`. The SLD search tree is composed as follows:
@@ -616,6 +675,7 @@ Prolog does not use exactly this extension to resolve negative literals; it sele
 ##
 
 ### Example
+
 ```prolog
 capital(rome).
 chief_town(bologna)
@@ -624,6 +684,7 @@ city(X):- chief_town(X).
 
 :- ~capital(X), city(X).
 ```
+
 In the example, we have just switched the subgoals of the query. However, this change has a heavily impact on the execution. Given this knowledge base, the interpreter will always return __false__. 
 
 The main problem lies in the meaning of the quantifiers of variables appearing in negative literals. The intended meaning of $\neg \textit{capital(bologna)}$ is: "does exist an $X$ such that $X$ is not a capital?" Given the knowledge base, it does exist an entity that is not a capital. 

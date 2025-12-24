@@ -143,6 +143,7 @@ Sometimes, it can be helpful to set up a query that asks: _which is the set $S$ 
 
 ### Examples
 Given the Knowledge Base:
+
 ```prolog
 p(1).
 p(2).
@@ -153,6 +154,7 @@ r(7).
 ```
 
 The results of the following second-order queries are:
+
 ```prolog
 :- setof(X, p(X), S).
    yes S = [0, 1, 2]
@@ -166,6 +168,7 @@ The results of the following second-order queries are:
 As we can see, the set $S$ from `setof(X, P, S)` does not include repetitions, while `bagof(X, P, L)` returns a list that does.
 
 Furthermore, these meta-predicates allow for the __conjuction__ of goals within their own scope.
+
 ```prolog
 :- setof(X, (p(X), q(X)), S).
    yes S = [2]
@@ -183,6 +186,7 @@ Furthermore, these meta-predicates allow for the __conjuction__ of goals within 
 ```
 
 The last two queries tell us that the Knowledge Base does not have any $X$ that satisfies the conjuction of goals `p(x), r(x)`.
+
 ```prolog
 :- setof(p(X), p(X), S).
    yes S = [p(0), p(1), p(2)]
@@ -197,6 +201,7 @@ These meta-predicates can also retrieve the __terms__ that make our goal true. F
 
 ### Example
 Given the Knoledge Base:
+
 ```prolog
 father(mario, aldo).
 father(mario, paola).
@@ -206,6 +211,7 @@ father(giovanni, giuseppe).
 ```
 
 We want to derive which individuals are fathers.
+
 ```prolog
 :- setof(X, Y^father(X, Y), S).
    yes [giovanni, mario, giuseppe]
@@ -214,6 +220,7 @@ We want to derive which individuals are fathers.
 ```
 
 The goal part uses a new __syntactic rule__, the __existential quantifier__ _Y^_. This allows us to retrieve the set of $X$ values such that there __exists__ a $Y$ that satisfies the goal `father(X, Y)`. If the existential quantifier is not used, the final result will be diplayed as multiple solutions, one for each unique $(X, Y)$ pair that makes the goal `father(X, Y)` true.
+
 ```prolog
 :- setof((X, Y), father(X, Y), S).
    yes S = [(giovanni, mario), (giovanni, giuseppe),
@@ -242,6 +249,7 @@ father(giovanni,giuseppe).
 ```
 
 We want to define which individuals are father.
+
 ```prolog
 :- findall(X, father(X, Y), S)
    yes S = [mario, giovanni, giuseppe]
@@ -250,6 +258,7 @@ We want to define which individuals are father.
 ```
 
 This code snippet is the same as:
+
 ```prolog
 :- setof(X, Y^father(X, Y), S)
    yes S = [mario, giovanni, giuseppe]
@@ -262,6 +271,7 @@ The meta-predicates `setof`, `bagof` and `findall` works also when the property 
 ### Example 
 
 Given the Knowledge base.
+
 ```prolog
 p(X, Y) :- q(X), r(X).
 
@@ -291,6 +301,7 @@ imply(Y) :- findall(Y, father(X, Y), S), verify(S).
 verify([]).
 verify([H|T]) :- employee(H), verify(T).
 ```
+
 First of all, `findall(Y, father(X, Y), S)` returns a list $S$ containing all the sons already present in the Knoledge Base (remember: the left-most part of the clause is always evaluated first by the Prolog interpreter). The same list $S$ is used to verify if all the instances $Y$ are _employee_. If only one of them is not an _employee_, the whole clause `imply(Y)` fails.
 
 ## 7. Iteration through setof
@@ -307,12 +318,14 @@ filter([H|T]):- call(q(H)), filter(T).
 As we already know, in Prolog terms and predicates share the same structure, therefore we can interchange them without any problem.
 
 Given the Knoledge Base.
+
 ```prolog
 h.
 h :- b1, b2, ..., bn.
 ```
 
 They correspond to the terms.
+
 ```prolog
 (h, true)
 (h, ','(b1, ','(b2, ','( ...','(bn - 1, bn) ...))))
@@ -326,6 +339,7 @@ They correspond to the terms.
 5. Its evaluation open more **choice points**, if more clauses with the same head are available.  
 
 Given the Knoledge Base.
+
 ```prolog
 p(1).
 q(X, a) :- p(X), r(a).
