@@ -13,6 +13,14 @@ Simply, we can develop a new interpreter that follows our **interpretation rules
 The meta-interpreters use two main meta-predicates:
 
 1. __clause(Head, Body)__: used to detect if it exists a given clause inside the database program.   
+    ```prolog
+    p(1).
+    q(x, a) :- p(x), r(a).
+
+    ?- clause(q(x, y) BODY)
+       yes X = 1 Y = a BODY = p(1), r(a);
+       no
+    ```
 2. __call(T)__: evaluation of the subject _T_ of the __call__ meta-predicate.
 
 ## 2. Meta-interpreter 
@@ -115,7 +123,9 @@ The basic idea is to extend our **knowledge base**. If we try to prove a `Goal` 
 We need a method that allows us to store the retrieved informations inside a permanent storage.
 
 ## 5. Modifying dynamically the program
-Any time a Prolog program is consulted, its representation in terms of data structure is loaded into a database. This database is the **program database** loaded in memory, handled by the common Database Management System techniques.
+Any time a Prolog program is consulted, its representation in terms of data structure is loaded into a database. This database is the **program database** loaded in memory, handled by the common DBMS (DataBase Management System) techniques.
+
+Note: a Prolog program is a set of **Horn clauses** and they are splitted by the domains of the database, in order to store them as a table definition.
 
 We can use this representation to update the knowledge base. The main methods to update the knowledge base are:
 - 1<sup>st</sup> `assert(T)` \
