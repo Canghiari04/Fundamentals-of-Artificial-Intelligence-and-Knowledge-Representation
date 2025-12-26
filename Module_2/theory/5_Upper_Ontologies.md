@@ -106,8 +106,7 @@ $$Partition(s,c) \Leftrightarrow Disjoint(s) \wedge ExhaustiveDecompotion(s,c).$
 #
 
 Sometimes between the parts of an object could be a **structural relation**. This feature may help us to distinguish objects in the physical composition discipline:
-- If it exists, the relation is named **PartOf**. The PartOf relation enjoys some properties, as: 
+- If it exists, mthe relation is named **PartOf**. The PartOf relation enjoys some properties, as: 
   - 1<sup>st</sup> **Transitivity**. $PartOf(x,y) \wedge PartOf(y,z) \rightarrow PartOf(x,z).$
   - 2<sup>nd</sup> **Reflexivity**. $PartOf(x,x).$
 - If it does not exist, the relation is named **BunchOf**. The BunchOf relation aims to define objects in terms of composition of other **countable** objects.
-
