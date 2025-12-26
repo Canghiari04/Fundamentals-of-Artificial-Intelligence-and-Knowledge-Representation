@@ -85,15 +85,15 @@ $$Disjoint(S) \Leftrightarrow (\forall c_1, c_2 \in S \wedge c_1 \neq c_2 \right
 
 So, basically, we are saying that the two categories $c_1$ and $c_2$ do not share the same objects.
 
-Subcategories might also cover all the possible categories of the parent category. Formally, given a category $c$ and a set $s$ of categories, $s$ is an **exhaustive decomposition** (meaning that we can cover the general category $c$ by all its subcategories $s$) of $c$ if:
-$$ExhaustiveDecomposition(s, c) \rightarrow (\forall i \in c \Leftrightarrow \exist c_2, c_2 \in s \wedge i \in c_2).$$
+Subcategories might also cover all the possible categories of the parent category. Formally, given a category $c$ and a set $S$ of categories, $S$ is an **exhaustive decomposition** (meaning that we can cover the general category $c$ by all its subcategories in $S$) of $c$ if:
+$$ExhaustiveDecomposition(S, c) \rightarrow (\forall i \in c \Leftrightarrow \exists c_2, c_2 \in S \wedge i \in c_2).$$
 
 If a category can be decomposed in more categories and each of them is disjointed from the others, then we have a **partition**. Given a category $c$, a partition of the category $c$ occurs when:
 - We have **disjointness** between subcategories of $c$.
 - We can describe an **exhaustive decomposition** of $c$.
 
-Formally, given a category $c$ and a set $s$ of subcategories, $s$ is a **partition** of $c$ if:
-$$Partition(s,c) \Leftrightarrow Disjoint(s) \wedge ExhaustiveDecompotion(s,c).$$
+Formally, given a category $c$ and a set $S$ of subcategories, $S$ is a **partition** of $c$ if:
+$$Partition(S,c) \Leftrightarrow Disjoint(S) \wedge ExhaustiveDecompotion(S,c).$$
 
 ## 4. Physical Composition
 **Physical composition** is another discipline based around the study of when something is a part of a more large entity. This discipline is called **meriology**, that studies the relation between object and its parts (note: we are assuming categories like object representations).
@@ -106,7 +106,7 @@ $$Partition(s,c) \Leftrightarrow Disjoint(s) \wedge ExhaustiveDecompotion(s,c).$
 #
 
 Sometimes between the parts of an object could be a **structural relation**. This feature may help us to distinguish objects in the physical composition discipline:
-- If it exists, mthe relation is named **PartOf**. The PartOf relation enjoys some properties, as: 
+- If it exists, the relation is named **PartOf**. The PartOf relation enjoys some properties, as: 
   - 1<sup>st</sup> **Transitivity**. $PartOf(x,y) \wedge PartOf(y,z) \rightarrow PartOf(x,z).$
   - 2<sup>nd</sup> **Reflexivity**. $PartOf(x,x).$
 - If it does not exist, the relation is named **BunchOf**. The BunchOf relation aims to define objects in terms of composition of other **countable** objects.
