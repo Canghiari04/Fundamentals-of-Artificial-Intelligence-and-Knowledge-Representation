@@ -3,7 +3,7 @@
 
 # Meta-predicates in Prolog
 
-`Equivalance of programs and data`
+`Equivalance of programs and data`.
 
 ## 1. Introduction
 There is one thing that make Prolog a really powerful programming language: __predicates__ and __terms__ (also viewed as programs and data) share the same __syntactic structure__. As a consequence of this equivalence, programs and data can be easily interchanged. But what does it really mean?
