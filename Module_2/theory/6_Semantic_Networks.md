@@ -5,7 +5,7 @@
 `One way to represent and reason about categories and objects`.
 
 ## 1. Introduction
-Done the **upper ontologies**, during the 60s and 70s, reasearchers start to reason about the way to represent all this stuff. As we already know, **categories** are a powerful mechanism for describing the knowledge representation. 
+Done the **upper ontologies**, during the 60s and 70s, reasearchers start to reason about the way to represent all this stuff. As we already knew, **categories** are a powerful mechanism for describing the knowledge representation. 
 
 The basic idea is to define categories in a **computable form**. First Order Logic is a great tool for describing knowledge, however, sometimes, it is not the easiest way for this goal. Historically, the approach that has been decided in knowledge representation field is the **semantic network**.
 
