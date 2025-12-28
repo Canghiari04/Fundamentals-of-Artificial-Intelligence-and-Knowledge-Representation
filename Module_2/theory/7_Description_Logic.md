@@ -62,6 +62,7 @@ By these tools, we can formalize more complex concepts using several instances c
   ### Example
   1. **[ALL :HasChild Male]** $\rightarrow$ Defining a new category made of individuals that have a zero or more children, but all males.
   2. **[ALL :HaveStudents Male]** $\rightarrow$ Defining a new category composed by invididuals that have only male students.
+   
   #
 - 2<sup>nd</sup> **[EXISTS n r]**. 
   
@@ -70,7 +71,9 @@ By these tools, we can formalize more complex concepts using several instances c
   ### Example
   1. **[EXISTS 1 :Child]** $\rightarrow$ Defining a new category that contains all the individuals that have at least one child.
   2. **[EXISTS 2 :HasCar]** $\rightarrow$ Defining a new category composed by invididuals that have at least two cars.
+   
   #
+
 - 3<sup>rd</sup> **[FILLS r c]**. 
 
   `It stands for those inviduals that are r-related to the individual identified by c`. It is the most specific case; we are defining a complex concept related to a specific instance of a category. 
@@ -78,7 +81,9 @@ By these tools, we can formalize more complex concepts using several instances c
   ### Example
   1. **[FILLS :HasCar aa123bb]** $\rightarrow$ Defining a new category made of all the individuals that have the car with plate `aa123bb`.
   2. **[FILLS :AreAttendingTheCourse thisCourse]** $\rightarrow$ Defining a new category that contains all the individuals that are attending this course.
+   
   #
+
 - 4<sup>th</sup> **[AND $d_1 ... d_n$]**. 
 
   `It stands for anything that holds all the domains d at the same time`. If we refer to the notion of sets, this concept-forming operator is like the **intersection** between sets.
@@ -98,6 +103,7 @@ By these tools, we can formalize more complex concepts using several instances c
   ]
   ```
   Defining a set of companies that holds all the properties described below.
+
   #
 
 **First Order Logic** focuses on sentences. A sentence is an expression that can be either true or false depending from the knowledge base.
@@ -107,16 +113,21 @@ We can try to determine the truth of a sentence also by Description Logics, usin
   
   ### Example
   *PhDStudent* $\subseteq$ *Student* $\rightarrow$ Every phd student is also a student.
+
   #
+
 - $d_1 = d_2$. Concept $d_1$ is **equivalent** to concept $d_2$, if and only if the inviduals that satisfy $d_1$ are the same that satisfy $d_2$.
   
   ### Example
   *PhDStudent* $=$ *[AND Student Graduated HasFunding]* $\rightarrow$ A phd student is a gratuated student that has some funding for his reasearch.
+
   #
+
 - $c \rightarrow d$. The individual denoted by $c$ satisfies the description expressed by concept $d$.
   
   ### Example
   *federico* $\rightarrow$ *Professor* $\rightarrow$ Federico is an instance of category `Professor`.
+
   #
 
 Above the basic idea, we have to provide a formal semantic of *DL*, which is the real meaning of this logic. The formal description of *DL* is given by the notion of **interpretation**.
@@ -191,6 +202,7 @@ polyneikes → [FILLS :HasChild thersandros].
 oedipus → Patricide.
 thersandros → ¬Patricide
 ```
+
 We want to know `if Iokaste has a child that is a patricide and itself has a child that is not patricide`.
 
 `1st Hypothesis` \
@@ -204,6 +216,45 @@ Under the *OWA*, the answer is: the knowledge base does not entail the sentence;
 The final answer should be always **YES**: in the first class the answer is <`Iokaste`, `Polyneikes`, `Thersandros`>, instead, in the second class the answer is <`Iokaste`, `Oedipus`, `Polyneikes`>. In all the models Iokaste has always a child that is a patricide and itself has a child that is not a patricide.
 
 In this way, both cases answer to the original question. However, the huge problem of this approach is given by the total amount of unknown informations, that in *OWA* might be infinite. *OWA* requires a lot of computational effort than *CWA*.
+
 #
 
-...
+## 4. Extending DL
+It's possible to extend the Description Logic in several directions, like adding new *concept-forming operators*. 
+
+We have already the **EXISTS** operator. We could similarly add the operator **AT-MOST**, where **[AT-MOST n r]** describes individuals related by *role r* to *at most n* individuals.
+
+### Example
+
+**[AT-MOST 1 :Child]** $\rightarrow$ Denotes all the parents that have only one child.
+
+#
+
+This extension could be dangerous if it is not used carefully. 
+
+### Example
+
+```
+[ AND
+    [EXISTS 4 r]
+    [AT-MOST 3 r]
+]
+```
+
+*How do we treat such situation?* We have a logical incoherence: at the same time we are asking for individuals r-related that have at least 4 items and at most 3 items. 
+
+#
+
+We can add to the concept-forming operator **EXISTS** a given domain *d*, it becomes: **[EXISTS n r d]**, meaning all the individuals that are *r-related* to *at least n* individuals that are instances of concept *d*.
+
+### Example
+
+**[EXISTS 2 :Child Male]** $\rightarrow$ defines the individuals that have at least 2 male children.
+
+#
+
+## 5. Conclusion
+Description Logics is a family of logics. Each logic is different from each other, depending on which **operators** are admitted in that logic. Of course, more operators means:
+- Higher expressivity.
+- Higher computational costs.
+- The logic itself may be **undecidable**.
