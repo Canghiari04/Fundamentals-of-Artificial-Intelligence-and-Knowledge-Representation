@@ -69,7 +69,7 @@ By these tools, we can formalize more complex concepts using several instances c
 
   ### Example
   1. **[EXISTS 1 :Child]** $\rightarrow$ Defining a new category that contains all the individuals that have at least one child.
-  2. **[ALL 2 :HasCar]** $\rightarrow$ Defining a new category composed by invididuals that have at least two cars.
+  2. **[EXISTS 2 :HasCar]** $\rightarrow$ Defining a new category composed by invididuals that have at least two cars.
   #
 - 3<sup>rd</sup> **[FILLS r c]**. 
 
@@ -77,7 +77,7 @@ By these tools, we can formalize more complex concepts using several instances c
 
   ### Example
   1. **[FILLS :HasCar aa123bb]** $\rightarrow$ Defining a new category made of all the individuals that have the car with plate `aa123bb`.
-  2. **[FILLS :AreAttendingTheCourse] thisCourse** $\rightarrow$ Defining a new category that contains all the individuals that are attending this course.
+  2. **[FILLS :AreAttendingTheCourse thisCourse]** $\rightarrow$ Defining a new category that contains all the individuals that are attending this course.
   #
 - 4<sup>th</sup> **[AND $d_1 ... d_n$]**. 
 
@@ -201,8 +201,9 @@ Indeed, we know `Polyneikes` has a son, `Thersandors`, and we know `Thersandros`
 
 Under the *OWA*, the answer is: the knowledge base does not entail the sentence; but this reasoning is not correct! All the possible **models** ($I \models S$) can be split up in two classes: one in which `Polyneikes` is a patricide, one where he is not a patricide. 
 
-The final answer should be always **YES**: in the first class the answer is <`Iokaste`, `Polyneikes`, `Thersandros`>, instead in the second class the answer is <`Iokaste`, `Oedipus`, `Polyneikes`>. In all the models Iokaste has always a child that is a patricide and itself has a child that is not a patricide.
+The final answer should be always **YES**: in the first class the answer is <`Iokaste`, `Polyneikes`, `Thersandros`>, instead, in the second class the answer is <`Iokaste`, `Oedipus`, `Polyneikes`>. In all the models Iokaste has always a child that is a patricide and itself has a child that is not a patricide.
 
-In this way, both cases answer to the original question. However, the huge problem of this approach is given by the total amount of unknown informations, that in *OWA* might be infinite. *OWA* requires a lot of computational effort then *CWA*.
+In this way, both cases answer to the original question. However, the huge problem of this approach is given by the total amount of unknown informations, that in *OWA* might be infinite. *OWA* requires a lot of computational effort than *CWA*.
 #
 
+...
