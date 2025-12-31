@@ -28,12 +28,28 @@ $$\operatorname{KB}^1 = \{\operatorname{hasBow}^0, \operatorname{hasArrow}^0, \o
 Some observations are already coming out:
 - 1<sup>st</sup>. The knowledge base at the time instant $0$ still available for the knowledge base at time instant $1$.
 - 2<sup>nd</sup>. If we take, any time, all the knowledge of the previous steps, our agent can easily enter in an infinite search space.
-- 3<sup>rd</sup>. We take this last assumption for granted, even though is not a feasible observation in a real world application (we don't have the capability to store so much informations).
+- 3<sup>rd</sup>. We take this last assumption for granted, even though it is not a feasible observation in a real world application (we don't have the capability to store so much informations).
 
 #
 
-What's really interesting is given by the dynamic evolution that bring us from the $\operatorname{KB}^0$ to the step $\operatorname{KB}^1$. *What happened in between*? 
+What's really interesting is given by the dynamic evolution that bring us from the $\operatorname{KB}^0$ to the $\operatorname{KB}^1$. *What happened in between*? 
 
 There is a general concept about **action**, whose execution changes the world. We would like to describe which are the **effects** of the executed actions.
 
 Additionally, there is a notion of **state** that captures the world at a certain instant. The evolution of the world is given by a sequence of states.
+
+Given the clue about **action**, we need to define a formalism about its effects that could change the world, also called **Effect Axiom**.
+
+### Example
+
+What does it mean *shooting an arrow*? 
+$$\operatorname{shoot}^t \rightarrow (\operatorname{hasArrow}^t \Leftrightarrow \neg \operatorname{hasArrow}^{(t+1)})$$
+
+If the action $\operatorname{shoot}$ is executed at time instant $t$, this implies that at time instant $t$ our agent has the arrow and at next time instant $(t+1)$ it will not have anymore the arrow.
+
+$\operatorname{KB}^0 = \{\operatorname{hasArrow}^0\}$ \
+$\operatorname{KB}^1 = \{\operatorname{hasArrow}^0, \neg \operatorname{hasArrow}^1\}$
+
+#
+
+...
