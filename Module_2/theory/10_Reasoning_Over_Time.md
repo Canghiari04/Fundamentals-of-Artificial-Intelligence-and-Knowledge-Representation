@@ -5,7 +5,7 @@
 `Reasoning about the past predicting the future`.
 
 ## 1. Introduction
-We live in a temporal dimension, our environment changes as times goes by. Up to now, we deal only within categories, substances and objects, providing us a static perception; we would like to represent a system that **evolves** along the temporal dimension.
+We live in a temporal dimension, our environment changes as times goes by. Up to now, we deal only with categories and objects, providing us a static perception; we would like to represent a system that **evolves** along the temporal dimension.
 
 We might need to take in account also a **dynamic dimension**, related to the passing time.
 
@@ -27,7 +27,7 @@ $$\operatorname{KB}^1 = \{\operatorname{hasBow}^0, \operatorname{hasArrow}^0, \o
 
 Some observations are already coming out:
 - 1<sup>st</sup>. The knowledge base at the time instant $0$ still available for the knowledge base at time instant $1$.
-- 2<sup>nd</sup>. If we take, any time, all the knowledge of the previous steps, our agent can easily enter in an infinite search space.
+- 2<sup>nd</sup>. If we take all the knowledge of the previous steps, our agent can easily enter in an infinite search space.
 - 3<sup>rd</sup>. We take this last assumption for granted, even though it is not a feasible observation in a real world application (we don't have the capability to store so much informations).
 
 #
@@ -124,7 +124,7 @@ The **event calculus ontology** has six fixed predicates, which are:
 Instead, the domain-independent axioms are:
 - 1<sup>st</sup> Used to detect when a fluent is true.
   $$\operatorname{HoldsAt}(F,T) \leftarrow \operatorname{Happens}(E,T_1) \wedge \operatorname{Initiates}(E,F,T_1) \wedge (T_1 < T) \wedge \neg \operatorname{Clipped}(T_1,F,T)$$
-  The fluent $F$ is true at time instant $T$ if happened the event $E$ at time instant $T_1$, event $E$ causes fluent $F$ at time instant $T_1$, time instant $T_1$ comes after time instant $T$ and no one has changed the fluent $F$ between $T$ and $T_1$.
+  The fluent $F$ is true at time instant $T$ if event $E$ occured at time instant $T_1$, event $E$ causes fluent $F$ at time instant $T_1$, time instant $T_1$ comes after time instant $T$ and no one has changed the fluent $F$ between $T$ and $T_1$.
 - 2<sup>nd</sup> Used to detect when a fluent is true.
   $$\operatorname{HoldsAt}(F,T) \leftarrow \operatorname{Initially}(F) \wedge \neg \operatorname{Clipped}(0,F,T)$$
   The fluent $F$ is true at time instant $T$ if it is verified at the initial state and no one has changed the fluent $F$ between time instant $O$ and $T$.
