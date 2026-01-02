@@ -574,7 +574,7 @@ If the condition $H > 0$ in the second clause fails, the CUT operator is never e
 ##
 
 ## 10. Negation
-There is a key point in Prolog that we haven't discussed yet: Prolog is based on own clauses, which are a subset of First Order Logic. We don't assume the whole scope of First Order Logic, we focus on a smaller fragment of it. However, this fragment allow us to have the same expressive power, even though some things cannot be written in Prolog.
+There is a key point in Prolog that we haven't discussed yet: Prolog is based on Horn clauses, which are a subset of First Order Logic. We don't assume the whole scope of First Order Logic, we focus on a smaller fragment of it. However, this fragment allow us to have the same expressive power, even though some things cannot be written in Prolog.
 
 As the definition states, Prolog allows only definite clauses, which __cannot contain negative literals__. The standard SLD resolution process is designed to derive __positive__ informations and is incapable to derive __negative__ information. If we provide a simple knowledge base such as:
 
