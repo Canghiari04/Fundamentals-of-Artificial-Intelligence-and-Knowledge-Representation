@@ -2,7 +2,7 @@
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });</script>
 
 # Upper Ontologies
-`A limited number of very high-level concepts that appear constantly.`
+`A limited number of very high-level concepts that appear constantly`.
 
 ## 1. Introduction 
 There are many different types of knowledge. However, in almost of the cases as humans being we tend to characterize any given knowledge by two **mental constructions**:

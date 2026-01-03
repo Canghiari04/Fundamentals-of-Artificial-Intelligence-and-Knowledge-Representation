@@ -26,8 +26,8 @@ f(a), f(g(1)), f(g(1), b(a), 27) % compound terms.
 
 In addition to the key elements of __Prolog__, we have different types of clauses:
 - __Fact__: ```A.``` represents a statement that is always true.
-- __Rule__: ```A :- B1, B2, ..., Bn``` meaning that $A$ is true if and only if $B_1, B_2, ..., B_n$ are true.
-- __Goal__: ```:- B1, B2, ..., Bn``` is a question asked to the system.
+- __Rule__: ```A :- B1, B2, ..., Bn.``` meaning that $A$ is true if and only if $B_1, B_2, ..., B_n$ are true.
+- __Goal__: ```:- B1, B2, ..., Bn.``` is a question asked to the system.
 
 ```prolog
 q. % fact
@@ -60,8 +60,9 @@ Every Prolog program has two main interpretations:
     If $Y_1, Y_2, ..., Y_m$ are the variables appearing __only__ in the body of the rule the intended meaning is: `∀X1, ∀X2, ..., ∀Xn ((∃Y1, ∃Y2, ..., ∃Ym (B1, B2, ..., Bn))) → A))`, in other words, for each variable $X_i$, if there exists variable $Y_j$ the head of the clause $A$ is verified. Let's see an example for a better understanding.
 
     ```prolog
-    happyperson(X) :- has(X, Y), car(Y) % for each person X, if exists a car Y (anyone) that X holds, X is a happy person.
+    happyperson(X) :- has(X, Y), car(Y)
     ```
+    For each person $X$, if exists a car $Y$ (anyone) that $X$ holds, $X$ is a happy person.
 
     If $X_1, X_2, ..., X_n$ are the variables appearing in __both__ the body and the head of the rule, the intended meaning is: `∀X1, ∀X2, ..., ∀Xn ∀Y1, ∀Y2, ..., ∀Ym ((B1, B2, ..., Bn) → A)`, in other words, for each variable $X_i$ and variable $Y_j$, that make the body true, the head of clause $A$ is also verified.
 
@@ -88,7 +89,7 @@ Every Prolog program has two main interpretations:
         q :- q,t.
 
         ?- p.
-        loopy path
+           loopy path
         ```
         
         In this toy example the fact `p.` comes after the rule `p :- q, r.`. If we ask the Prolog interpreter the query `?- p.`, the program will enter a loopy path, failing to solve it. Defining the correct order, the query will be immediately solved.
@@ -99,23 +100,139 @@ Every Prolog program has two main interpretations:
         q :- q,t.
 
         ?- p.
-        yes
+           yes
         ```
         
         There may exist multiple answer for a query. The way to retrieve them is easy: after getting an answer, we can force the interpreter to search for the __next solution__. Pratically, this means asking the procedure (a set of clauses with the same head and arity) to explore the remaining part of the __search tree__. In Prolog, the standard way involves using the operator `;`.
         
         ```prolog
         :- sister(maria, W).
-        yes W = giovanni;
-        yes W = annalisa;
-        no
+           yes W = giovanni;
+           yes W = annalisa;
+           no
         ```
         
         The knowledge `giovanni, annalisa` comes from the previously defined facts.
 
-## 3. Royal Family Exercise
+### Royal Family Exercise
 
-## 4. Arithmetic and Math in Prolog
+```prolog
+female(mum).
+female(anne).
+female(kydd).
+female(zara).
+female(sarah).
+female(diana).
+female(sophie).
+female(louise).
+female(eugenie).
+female(margaret).
+female(beatrice).
+female(elizabeth).
+
+male(mark).
+male(harry).
+male(peter).
+male(james).
+male(george).
+male(philip).
+male(andrew).
+male(edward).
+male(spencer).
+male(charles).
+male(william).
+
+married(mark, anne).
+married(george, mum).
+married(andrew, sarah).
+married(charles, diana).
+married(edward, sophie).
+married(philip,elizabeth).
+
+parent(george, margaret).
+parent(george, elizabeth).
+
+parent(mum, margaret).
+parent(mum, elizabeth).
+
+parent(elizabeth, anne).
+parent(elizabeth, andrew).
+parent(elizabeth, edward).
+parent(elizabeth, charles).
+
+parent(philip, anne).
+parent(philip, andrew).
+parent(philip, edward).
+parent(philip, charles).
+
+parent(kydd, diana).
+parent(spencer, diana).
+
+parent(diana, harry).
+parent(diana, william).
+
+parent(charles, harry).
+parent(charles, william).
+
+parent(anne, zara).
+parent(anne, peter).
+
+parent(mark, zara).
+parent(mark, peter).
+
+parent(andrew, eugenie).
+parent(andrew, beatrice).
+
+parent(sarah, eugenie).
+parent(sarah, beatrice).
+
+parent(edward, james).
+parent(edward, louise).
+
+parent(sophie, james).
+parent(sophie, louise).
+
+father(X, Y) :- parent(X, Y), male(X).
+mother(X, Y) :- parent(X, Y), female(X).
+
+sibling(X, Y) :- parent(G, X), parent(G, Y), X \= Y.
+full_sibling :- father(G1, X), father(G1, Y), mother(G2, X), mother(G2, Y), X \= Y. 
+
+brother(X, Y) :- male(X), sibling(X, Y), X \= Y.
+sister(X, Y) :- female(X), sibling(X, Y), X \= Y.
+
+child(X, Y) :- parent(Y, X).
+son(X, Y) :- parent(Y, X), male(X).
+daughter(X, Y) :- parent(Y, X), female(X).
+
+wife(X, Y) :- female(X), married(Y, X).
+husband(X, Y) :- male(X), married(X, Y).
+
+grandparent(X, Y) :- parent(X, Z), parent(Z, Y).
+grandchild(X, Y) :- parent(Y, Z), parent(Z, X).
+
+cousin(X, Y) :- parent(G1, X), parent(G2, Y), sibling(G1, G2), X \= Y, \+ parent(X, Y), \+ parent(Y, X).
+
+aunt(X, Y) :- parent(G, Y), sibling(G, X), female(X).
+uncle(X, Y) :- parent(G, Y), sibling(G, X), male(X).
+
+greatgrandparent(X, Y) :- grandparent(Z, Y), parent(X, Z).
+
+ancestor(X, Y) :- parent(X, Y).
+ancestor(X, Y) :- parent(Z, Y), ancestor(X, Z).
+
+brotherinlaw(X, Y) :- male(X), sibling(Z, Y), married(X, Z).
+brotherinlaw(X, Y) :- male(X), male(Y), married(X, Z1), married(Y, Z2), sibling(Z1, Z2).
+brotherinlaw(X, Y) :- male(X), female(Y), married(X, Z1), married(Z2, Y), sibling(Z1, Z2).
+
+sisterinlaw(X, Y) :- female(X), sibling(Z, Y), married(Z, X).
+sisterinlaw(X, Y) :- female(X), male(Y), married(Z1, X), married(Y, Z2), sibling(Z1, Z2).
+sisterinlaw(X, Y) :- female(X), female(Y), married(Z1, X), married(Z2, Y), sibling(Z1, Z2).
+```
+
+#
+
+## 3. Arithmetic and Math in Prolog
 Arithmetic in Prolog is not a standard logical feature; it relies on special __built-in predicates__ to force its evaluation. In Prolog, an expression like `2 + 3` is just a __term__, not the numeric value `5`. For instance, the interpreter will associate the structure `+ (2, 3)` with the fact `p(2 + 3).`. 
 
 However, the special and predefined predicate `is` forces the evaluation of any mathemical expression. Its syntax is simple: define the variable, then the predicate `is` and finally the expression to evaluate.
@@ -128,19 +245,19 @@ We previously mentioned that Prolog is based on the SLD resolution process, whic
 
 ```prolog
 ?- X is 2 + 3.
-yes X = 5
+   yes X = 5
 
 ?- X1 is 2+3, X2 is exp(X1), X is X1 * X2.
-yes X1 = 5, X2 = 148.143, X = 742.065
+   yes X1 = 5, X2 = 148.143, X = 742.065
 
 ?- X is Y - 1.
-no
-(or Instantion Fault, depending on the prolog system)
+   no
+   (or Instantion Fault, depending on the prolog system)
 ```
 
 ```prolog
 ?- X is 2 + 5, X is 4 + 1.
-yes X = 5
+   yes X = 5
 ```
 
 In this example, the second goal becomes:
@@ -168,7 +285,7 @@ q(X, Y) :- p(a, Y), X is Y.
 (q(X, Y) :- p(_, Y), X is Y.) % this clause will use both procedures, achieved by the anonymus symbol.
 
 ?- q(X, Y)
-yes X = 17 Y = 2 + 3 * 5 (Y=+(2, *(3, 5)))
+   yes X = 17 Y = 2 + 3 * 5 (Y=+(2, *(3, 5)))
 ```
 
 Initially, the predicate `p(a, Y)` is unified with the fact `p(a, 2 + 3 * 5).`. The association defines the atomic structure `+(2 *(3, 5))`. The second step involves the evaluation of the mathematical expression `X is 2 + 3 * 5`. (why do we define the constant `a` inside the fact __p__? As we already know, a procedure is a set of clauses with same head and arity; the constant `a` allow us to distinguish which predicate we are dealing with!)
@@ -212,7 +329,7 @@ fatt(N, Y) :-
 
 Before moving on, it's crucial to understand its behavior and how it truly works. The example above uses the __recursion__  to solve the `factorial problem`: it begins by constructing the search tree until it reaches the leaf nodes `fact(0, 1)` and then moves towards the root node, computing the mathematical expression at each step.
 
-## 5. Iteration and Recursion
+## 4. Iteration and Recursion
 In Prolog, __iteration__ as in `while`, `foreach` or `repeat` __does not exist__. However, we can simulate iterative behavior through __recursion__, as already done in the `factorial example`. Prolog models iteration by defining a predicate (remember: a predicate is a set of clauses, not just one!) with two essential parts:
 - __Base case__: a non-recursive clause, generally a __fact__, that defines the __termination condition__ of the process.
 - __Recursive case__: a rule that performs a single step of the operation and then calls itself with modified arguments, moving the process closer to the base case.
@@ -241,9 +358,75 @@ fatt1(N, M, ACCin, ACCout) :-
 
 The factorial is computed using an __accumulator__. An accumulator is an extra argument passed to the predicate, which holds the running or partial result of the computation at each step. The main advantage is that the evaluation of the mathematical expression is done __before__ the recursive call, avoiding __backtracking__ and mantaining a constant __space complexity__.
 
-## 6. Iteration Exercises
+### Iteration Exercises
 
-## 7. Lists
+```prolog
+% Define a Prolog program that receives in input a number N,
+% and print all the numbers between 1 and N.
+printA(1) :- write(1), nl.
+printA(N) :-
+    N > 1,
+    write(N), nl,
+    N1 is N - 1,
+    printA(N1).
+
+% Define a Prolog program that receives in input a number N,
+% and print all the numbers between 1 and N, from the smallest
+% to the greatest.
+printB(1) :- write(1), nl.
+printB(N) :-
+    N > 1,
+    N1 is N - 1,
+    printB(N1),
+    write(N), nl.
+% Define a Prolog program that computes the Fibonacci number.
+fibonacci(0, 0).
+fibonacci(1, 1).
+fibonacci(N, R) :-
+    N > 1,
+    N1 is N - 1,
+    fibonacci(N1, R1),
+    N2 is N - 2,
+    fibonacci(N2, R2), 
+    R is R1 + R2.
+
+% Write a predicate about a number N, that is true if N is prime.
+check_divisor(N, D) :-
+    D >= N.
+check_divisor(N, D) :-
+    D < N, 
+    Rest is N mod D,
+    Rest \= 0,
+    Div is D + 1,
+    check_divisor(N, Div).
+
+is_prime(N) :-
+    N > 1,
+    check_divisor(N, 2).
+
+% Write a predicate that, given a number N, prints out all the prime numbers between 2 and N.
+print_is_prime(N) :-
+    is_prime(N),
+    write(N), nl.
+print_is_prime(N) :-
+    \+is_prime(N).
+
+print_all_primes(N, J) :- 
+    J > N.
+print_all_primes(N, J) :- 
+    J =< N,
+    print_is_prime(J),
+    J1 is J + 1,
+    print_all_primes(N, J1).
+
+all_primes(N) :-
+    N >= 2,
+    print_all_primes(N, 2).
+```
+
+#
+
+## 5. Lists
 Lists are one of the most fundamental and widely used data structures in any programming languages. In Prolog, lists are terms built upon the special atom `[ ]`, called __empty list__, and the __constructor operator__ `.`. A list is recursively defined as:
 - The __empty list__, `[ ]`.
 - A non-empty list consisting of a __head__ and a __tail__, where the tail is itself a list, `.(T, List)`.
@@ -302,16 +485,16 @@ The greatest power about lists in Prolog comes from the easy way to manipulate t
 p([1, 2, 3, 4, 5, 6, 7, 8, 9]).
 
 :- p(X).
-yes X = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+   yes X = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 :- p([X|Y]).
-yes X = 1 Y = [2, 3, 4, 5, 6, 7, 8, 9]
+   yes X = 1 Y = [2, 3, 4, 5, 6, 7, 8, 9]
 
 :- p([X,Y|Z]).
-yes X = 1 Y = 2 Z = [3, 4, 5, 6, 7, 8, 9]
+   yes X = 1 Y = 2 Z = [3, 4, 5, 6, 7, 8, 9]
 
 :- p([_|X]).
-yes X = [2, 3, 4, 5, 6, 7, 8, 9]
+   yes X = [2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
 This code snippet represents some examples about list unification processes. In particular, it's important to focus on the last predicate shown: we used the __anonymus symbol__ `_` to create a new list containing all the previous values __except__ the first one. The anonymus symbol allows us to "ignore" the first value of the current data structure.
@@ -327,10 +510,10 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
     isList([X|Tail]) :- isList(Tail).
 
     :- isList([1, 2, 3]).
-    yes 
+       yes 
 
     :- isList([a|b]).
-    no
+       no
     ```
 
 2. __member__
@@ -342,32 +525,31 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
     member(X, [_|Tail]) :- member(X, Tail).
 
     :- member(1, [1, 2, 3]).
-    yes 
+       yes 
 
     :- member(4, [1, 2, 3]).
-    no
+       no
 
     :- member(X, [1, 2, 3]).
-    yes X = 1;
-        X = 2:
-        X = 3;
-    no
+       yes X = 1;
+           X = 2:
+           X = 3;
+       no
     ```
 
 3. __length__
 
     `length` defines the size of the list. It takes a list as first argument and the number of elements contained in the list as the second argument.
 
-    ```prolog, 0).
-], N) :- as the second argument 
-        length(Tail, NT),
-        N is NT + 1.
+    ```prolog
+    :- length(Tail, NT),
+       N is NT + 1.
 
     :- length([1, 2, 3], 3).
-    yes
+       yes
 
     :- length([1, 2, 3], Result).
-    yes Result = 3
+       yes Result = 3
     ```
 
 4. __append__
@@ -383,15 +565,15 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
         append(Rest1, L2, NewTail).
 
     :- append([1, 2], [3, 4, 5], L).
-    yes
+       yes
 
     L = [1, 2, 3, 4, 5]
     :- append([1, 2], L2, [1, 2, 4, 5]).
-    yes
+       yes
 
     L2 = [4, 5]
     :- append([1, 3], [2, 4], [1, 2, 3, 4]).
-    no
+       no
     ```
 
 5. __deleteFirstOccurrence__
@@ -401,8 +583,7 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
     ```prolog
     deleteFirstOccurence(El, [], []).
     deleteFirstOccurence(El, [El|T], T).
-    deleteFirstOccurence(El, [H|T], [H|T1]) :-
-        deleteFirstOccurence(El, T, T1).
+    deleteFirstOccurence(El, [H|T], [H|T1]) :- deleteFirstOccurence(El, T, T1).
     ```
 
 6. __deleteAllOccurrences__
@@ -426,18 +607,101 @@ List operations are inherently recursive, using the `[Head|Tail]` data structure
         append(Partial, [H], Result).
 
     :- reverse([], []).
-        yes
+       yes
 
     :- reverse([1, 2], Lr).
-        yes Lr = [2, 1]
-
+       yes Lr = [2, 1]
+ 
     :- reverse(L, [2, 1]).
-        yes L = [1, 2]
+       yes L = [1, 2]
     ```
 
-## 8. List Exercises
+### List Exercises
 
-## 9. The CUT
+``` prolog 
+% Write a predicate that given a list, it returns the last element.
+searching_last_element([X], X).
+searching_last_element([_|Tail], X) :- 
+    searching_last_element(Tail, X).
+
+% Write a predicate that given two lists L1 and L2, returns true 
+% if and only if L1 is a sub-list of L2.
+sub_list([X], L2) :-
+    member(X, L2).
+sub_list([Head|Tail], L2) :- 
+    member(Head, L2),
+    sub_list(Tail, L2).
+
+% Write a predicate that returns true if and only if a list is 
+% a palindrome.
+check_list_palindrome([X1], [X2]) :-
+    X1 is X2.
+check_list_palindrome([H1|T1], [H2|T2]) :-
+    H1 is H2,
+    check_list_palindrome(T1, T2). 
+
+palindrome(L1) :-
+    reverse(L1, L2),
+    check_list_palindrome(L1, L2).
+
+% Write a predicate that, given a list returns a new list with 
+% repeated elements.
+repeated_elements([_], []).
+repeated_elements([Head|Tail], Result) :-
+    \+ member(Head, Tail),
+    repeated_elements(Tail, Result).
+repeated_elements([Head|Tail], Result) :-
+    member(Head, Tail),
+    repeated_elements(Tail, Acc),
+    Result = [Head | Acc].
+
+% Write a predicate that given a list L and a term T, counts the 
+% number of occurrences of T in L.
+counting_occurrences(_, [], 0).
+counting_occurrences(T, [X], 1) :-
+    T = X.
+counting_occurrences(T, [X], 0) :-
+    T \= X.
+counting_occurrences(T, [Head|Tail], Result) :-
+    counting_occurrences(T, Tail, TailCount),
+    T = Head,
+    Result is TailCount + 1.
+counting_occurrences(T, [Head|Tail], Result) :-
+    counting_occurrences(T, Tail, TailCount),
+    T \= Head,
+    Result is TailCount.
+
+% Write a predicate that, given a list, returns a new list 
+% obtained by flattening the first list.
+flattening_list([], []).
+flattening_list([Head|Tail], L) :-
+    is_list(Head),
+    flattening_list(Head, RestHead),
+    flattening_list(Tail, RestTail),
+    append(RestHead, RestTail, L).
+flattening_list([Head|Tail], L) :-
+    \+ is_list(Head),
+    flattening_list(Tail, RestTail),
+    L = [Head|RestTail].
+
+% Write a predicate that given a list, returns a new list that 
+% is the first one, but ordered.
+find_min([X], X).
+find_min([Head|Tail], Min) :-
+    find_min(Tail, TailMin),
+    (Head =< TailMin -> Min = Head; Min = TailMin).
+
+ordering_list([], []).
+ordering_list(L, Result) :- 
+    find_min(L, Min),
+    select(Min, L, Rest),
+    ordering_list(Rest, RestResult),
+    Result = [Min|RestResult].
+```
+
+#
+
+## 6. The CUT
 The __cut operator__ `!` is a predefined predicate that allows interference with and control over the execution process of a Prolog program. It has no logic meaning or declarative semantic, but it heavily affects the execution process.
 
 Any execution process is built upon two stacks:
@@ -510,9 +774,9 @@ c(1).
 c(2).
 
 :- a(X,Y).
-yes X=1 Y=1;
-    X=1 Y=2;
-no
+   yes X=1 Y=1;
+       X=1 Y=2;
+   no
 ```
 
 As we can see from the example, the interpreter will always take the first fact of `b`, which is `b(1).`. The alternatives `b(2)` and `a(0, 0).` are simply ignored (remember: the CUT operator affects the predicates defined __before__ the cut, but also __alternative clauses__ for the predicate in which it appears!). 
@@ -528,7 +792,7 @@ q(2).
 r(2).
 
 :- p(X).
-no
+   no
 ```
 
 This example fails because the only match for `q(X)` that Prolog finds first is 1. The variable $X$ becomes 1. Since the fact is `r(2).`, the predicate `r` does not have any match for 1, so the query with $X = 1$ fails. Without the cut operator, or by defining `q(2).` before `q(1).`, the query $X = 2$ would succeed after backtracking.
@@ -573,7 +837,7 @@ If the condition $H > 0$ in the second clause fails, the CUT operator is never e
 
 ##
 
-## 10. Negation
+## 7. Negation
 There is a key point in Prolog that we haven't discussed yet: Prolog is based on Horn clauses, which are a subset of First Order Logic. We don't assume the whole scope of First Order Logic, we focus on a smaller fragment of it. However, this fragment allow us to have the same expressive power, even though some things cannot be written in Prolog.
 
 As the definition states, Prolog allows only definite clauses, which __cannot contain negative literals__. The standard SLD resolution process is designed to derive __positive__ informations and is incapable to derive __negative__ information. If we provide a simple knowledge base such as:
