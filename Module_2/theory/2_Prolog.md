@@ -2,8 +2,7 @@
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });</script>
 
 # Prolog 
-
-`A Prolog program is a set of definite Horn clauses.`
+`A Prolog program is a set of definite Horn clauses`.
 
 ## 1. Syntax
 But, what is a clause? A clause is set of different logic terms, which typically are:

@@ -2,7 +2,6 @@
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });</script>
 
 # Meta-interpreters in Prolog
-
 `A program fully developed in Prolog`.
 
 ## 1. Introduction 

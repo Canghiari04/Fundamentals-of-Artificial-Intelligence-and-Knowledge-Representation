@@ -2,7 +2,6 @@
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });</script>
 
 # Meta-predicates in Prolog
-
 `Equivalance of programs and data`.
 
 ## 1. Introduction
