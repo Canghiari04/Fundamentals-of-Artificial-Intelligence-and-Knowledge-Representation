@@ -117,14 +117,11 @@ These results are obtained by more formal steps, divided into:
 
 In general, given a query $Q$ and a world $w$:
 $$
-P(Q|w) =
-     \left 
-        \{ 
-            \begin{array}{l}
-                1 & \text{if Q is true in w}\\  
-                0
-            \end{array} 
-    \right.
+P(Q|w) = 
+\begin{cases} 
+    1 & \text{if $Q$ is true in $w$} \\
+    0 & \text{otherwise}
+\end{cases}
 $$
 
 Given the query `sneezing(bob)`, we deduce that it's true in the first, second and third possible world. The probability of `sneezing(bob)` is equal to the sum of the possible worlds probabilities in which `sneezing(bob)` is true.
