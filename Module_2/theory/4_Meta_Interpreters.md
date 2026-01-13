@@ -43,7 +43,7 @@ solve(A) :- clause(A, B), solve(B).
 ```
 
 This snippet of code has three main passages:
-- 1<sup>st</sup> step. If we pass a **true fact** to the predicate, then all the other possibilities are thrown away from the search tree and the computation stops. 
+- 1<sup>st</sup> step. If we pass a **true fact** to the procedure, then all the other possibilities are thrown away from the search tree and the computation stops. 
 - 2<sup>nd</sup> step. `(A, B)` is the **conjuction** of different literals. The goal of the predicate is to prove the truth of the conjuction. This clause answers to the question: *which is the resolution order of the conjuction?*. By this example, we have choosen the `left-most` rule.
 - 3<sup>rd</sup> step. Given a rule `A`, the predicate will check if, inside the database program, `A` is already defined as a rule with a body `B`, and then we solve `B` in order to find the truth of the rule.
 

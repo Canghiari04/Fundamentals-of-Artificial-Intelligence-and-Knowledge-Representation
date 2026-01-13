@@ -124,7 +124,7 @@ The **event calculus ontology** has six fixed predicates, which are:
 Instead, the domain-independent axioms are:
 - 1<sup>st</sup> Used to detect when a fluent is true.
   $$\operatorname{HoldsAt}(F,T) \leftarrow \operatorname{Happens}(E,T_1) \wedge \operatorname{Initiates}(E,F,T_1) \wedge (T_1 < T) \wedge \neg \operatorname{Clipped}(T_1,F,T)$$
-  The fluent $F$ is true at time instant $T$ if event $E$ occured at time instant $T_1$, event $E$ causes fluent $F$ at time instant $T_1$, time instant $T_1$ comes after time instant $T$ and no one has changed the fluent $F$ between $T$ and $T_1$.
+  The fluent $F$ is true at time instant $T$ if event $E$ occured at time instant $T_1$, event $E$ causes fluent $F$ at time instant $T_1$, time instant $T_1$ comes before time instant $T$ and no one has changed the fluent $F$ between $T$ and $T_1$.
 - 2<sup>nd</sup> Used to detect when a fluent is true.
   $$\operatorname{HoldsAt}(F,T) \leftarrow \operatorname{Initially}(F) \wedge \neg \operatorname{Clipped}(0,F,T)$$
   The fluent $F$ is true at time instant $T$ if it is verified at the initial state and no one has changed the fluent $F$ between time instant $O$ and $T$.

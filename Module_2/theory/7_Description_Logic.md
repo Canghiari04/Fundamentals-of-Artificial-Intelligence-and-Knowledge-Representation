@@ -25,7 +25,7 @@ The most simple Description Logic is *DL* (Description Logics is a set of logics
   1. Punctuation ( , ), [ , ].
   2. Positive integers.
   3. Concept-forming operators **ALL**, **EXISTS**, **FILLS**, **AND**.
-  4. Connectives $\subseteq$, $=$, $\rightarrow$.
+  4. Connectives $\sqsubseteq$, $\doteq$, $\rightarrow$.
 
   Each *concept-forming operator* has its own meaning and their semantic is influenced by the properties of the instances of a given category.
 - Non-logical symbols, their meanings are domain-dependent.

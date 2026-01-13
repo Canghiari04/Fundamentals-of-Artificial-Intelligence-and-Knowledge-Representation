@@ -14,9 +14,9 @@ However, we would like to describe contact points between agents: they saw same 
 First Order Logic is a great tool for describing knowledge, even though it misses useful shortcuts for dealing with concepts such as knowledge, beliefs, wishes.
 
 ## 2. Knowledge and Beliefs
-So far, we discussed about representing knowledge and we adopted this of view: our agent do some actions based of the knowledge available in the environment.
+So far, we discussed about representing knowledge and we adopted this point of view: our agent do some actions based of the knowledge available in the environment.
 
-However, this assumption has some limits: our agent has a knowledge base but it doesn't know it; it does not have any consciussness about the its knowledge. It would be great if agents had the capability to retrieve informations from each other.
+However, this assumption has some limits: our agent has a knowledge base but it doesn't know it; it does not have any consciussness about its knowledge. It would be great if agents had the capability to retrieve informations from each other.
 
 We do not have the logical stuff to represent consciussness, but we can try using **modal logics**. Usually modal logics are used to define the **propositional attitudes** of an agent, such as: **Believes**, **Knows**, **Wants**, **Informs**. For each of them we have a **Modal Operator**.
 
@@ -48,7 +48,7 @@ However, we are not really interested about these operators; we introduced them 
 
 Given a notion of world, we don't know how it will evolve, but right now we have the tools to access to the informations of the future worlds.
 
-Like any logic, we have to discuss about the axioms of the modal logics. There are different axioms for each modal operator, we focus on the knowledge modal operator ones, and, also, it's up to us to add new ones if we think they are strictly necessary.
+Like any logic, we have to discuss about the axioms of the modal logics. There are different axioms for each modal operator, we focus on the Knows modal operator ones, and, also, it's up to us to add new ones if we think they are strictly necessary.
 
 - 1<sup>st</sup>. Axiom A0. All instances of propositional tautologies are valid.
 - 2<sup>nd</sup>. Modus Ponens. If $\phi$ is valid and $\phi \rightarrow \psi$ is valida, then $\psi$ is valid.
@@ -81,7 +81,7 @@ Temporal logics introduce the following operators:**Allen's Logic**
 - $\circ\phi$. Something is true at the next moment in time.
 - $\square\phi$. There is a $\phi$ that is always true in the future. Now $\phi$ might be true o false, but at the next moment it will be surely true.
 - $\diamond\phi$. There is a $\phi$ that is true sometimes in the future. Sooner or later it will become true.
-- $\phi U \psi$. There exists a moment when $\psi$ hold and $\phi$ will hold from now until this momenet (also called **strong until**).
+- $\phi U \psi$. There exists a moment when $\psi$ hold and $\phi$ will hold from now until this moment s (also called **strong until**).
 - $\phi W \psi$. $\phi$ will hold from now on unless $\psi$ happens, in which case $\phi$ will cease. Here, we are not sure that $\psi$ will occur in the future (also called **weak until**).
 
 LTL is the third mechanism for reasoning over time; previously we saw **Event Calculus** and **Allen's Logic**. It's quite effective for modelling distributed systems, where different agents can exchange messages and information, and, also, for modelling checking systems (checking if a system, given a certain world, contains or not some stuff).

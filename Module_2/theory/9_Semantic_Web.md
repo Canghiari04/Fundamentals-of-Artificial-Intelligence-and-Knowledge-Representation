@@ -2,7 +2,7 @@
 <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$', '$']]}, messageStyle: "none" });</script>
 
 # Semantic Web and Knowledge Graphs
-`Integrating in one place heterogeneous information sources`.
+`Integrating in one place heterogeneous information resources`.
 
 ## 1. Introduction
 Tim Berners-Lee came out in 2007 saying: the whole internet structure is a **huge knowledge base**, we need to exploit this knowledge base in order to perform **reasoning**.

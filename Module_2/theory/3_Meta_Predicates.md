@@ -69,7 +69,7 @@ Forcing a proof to fail might seem counter-intuitive, but it serves three main p
 3. To implement a form of __logical implication__.
 
 ### Iteration Example
-Let us consider a __Knoledge Base__ with facts `p(X).` and suppose we want to apply a predicate `q(X)` on all $X$ that satisfy a fact `p(X)`. 
+Let us consider a __knowledge base__ with facts `p(X).` and suppose we want to apply a predicate `q(X)` on all $X$ that satisfy a fact `p(X)`. 
 
 ```prolog
 iterate :- 
@@ -141,7 +141,7 @@ Sometimes, it can be helpful to set up a query that asks: _which is the set $S$ 
 - __Failure__. If no $X$ satisfies $P$, the predicate __fails__.
 
 ### Examples
-Given the Knowledge Base:
+Given the knowledge base:
 
 ```prolog
 p(1).
@@ -184,7 +184,7 @@ Furthermore, these meta-predicates allow for the __conjuction__ of goals within 
    no
 ```
 
-The last two queries tell us that the Knowledge Base does not have any $X$ that satisfies the conjuction of goals `p(x), r(x)`.
+The last two queries tell us that the knowledge base does not have any $X$ that satisfies the conjuction of goals `p(x), r(x)`.
 
 ```prolog
 :- setof(p(X), p(X), S).
@@ -199,7 +199,7 @@ The last two queries tell us that the Knowledge Base does not have any $X$ that 
 These meta-predicates can also retrieve the __terms__ that make our goal true. For instance, the query `:- setof(p(x), p(x), S)` returns the set of terms `p(X)` that makes the goal `p(X)` verified.
 
 ### Example
-Given the Knoledge Base:
+Given the knowledge base:
 
 ```prolog
 father(mario, aldo).
@@ -229,7 +229,7 @@ The goal part uses a new __syntactic rule__, the __existential quantifier__ _Y^_
    Y = Y
 ```
 
-The final code snippet describes all the __tuples__ retrieved by the Knoledge Base that make the goal `father(X, Y)` true.
+The final code snippet describes all the __tuples__ retrieved by the knowledge base that make the goal `father(X, Y)` true.
 
 ## 5. Findall predicate
 The `findall` meta-predicate returns the list $S$ of instances $X$ for which predicate $P$ is true. If there is no $X$ satisfying $P$, the meta-predicate returns an empty list. 
@@ -238,7 +238,7 @@ Its behavior is essentially equal to the __existential quantifier__, it searches
 
 ### Example
 
-Given the Knowledge Base:
+Given the knowledge base:
 ```prolog
 father(mario,aldo).
 father(mario, paola).
@@ -269,7 +269,7 @@ The meta-predicates `setof`, `bagof` and `findall` works also when the property 
 
 ### Example 
 
-Given the Knowledge base.
+Given the knowledge base.
 
 ```prolog
 p(X, Y) :- q(X), r(X).
@@ -290,7 +290,7 @@ The `findall` predicate returns the set of instances $X$ that satisfy the rule `
 ```
 
 ## 6. Implication through setof
-Let's suppose we have a Knowledge Base containing facts about `father(X, Y)` and `employee(Y)`. We want to verify if it is true that for every $Y$ for which `father(X, Y)` holds, then $Y$ is an _employee_ (so, basically we are asking if exists $Y$ such that $X$ is the father of $Y$ and it is an _employee_). 
+Let's suppose we have a knowledge base containing facts about `father(X, Y)` and `employee(Y)`. We want to verify if it is true that for every $Y$ for which `father(X, Y)` holds, then $Y$ is an _employee_ (so, basically we are asking if exists $Y$ such that $X$ is the father of $Y$ and it is an _employee_). 
 
 In logical terms, this query can be seen as a simple implication. $$father(X, Y) \rightarrow employee(Y)$$
 
@@ -301,7 +301,7 @@ verify([]).
 verify([H|T]) :- employee(H), verify(T).
 ```
 
-First of all, `findall(Y, father(X, Y), S)` returns a list $S$ containing all the sons already present in the Knoledge Base (remember: the left-most part of the clause is always evaluated first by the Prolog interpreter). The same list $S$ is used to verify if all the instances $Y$ are _employee_. If only one of them is not an _employee_, the whole clause `imply(Y)` fails.
+First of all, `findall(Y, father(X, Y), S)` returns a list $S$ containing all the sons already present in the knowledge base (remember: the left-most part of the clause is always evaluated first by the Prolog interpreter). The same list $S$ is used to verify if all the instances $Y$ are _employee_. If only one of them is not an _employee_, the whole clause `imply(Y)` fails.
 
 ## 7. Iteration through setof
 Given a Prolog program, we can execute a procedure `q` on each element for which `p` is true.
@@ -316,7 +316,7 @@ filter([H|T]):- call(q(H)), filter(T).
 ## 8. Clause predicate
 As we already know, in Prolog terms and predicates share the same structure, therefore we can interchange them without any problem.
 
-Given the Knoledge Base.
+Given the knowledge base.
 
 ```prolog
 h.
@@ -337,7 +337,7 @@ They correspond to the terms.
 4. Its evaluation return **true** if `(Head, Body)` is unified with a clause stored within the database program.
 5. Its evaluation open more **choice points**, if more clauses with the same head are available.  
 
-Given the Knoledge Base.
+Given the knowledge base.
 
 ```prolog
 p(1).
