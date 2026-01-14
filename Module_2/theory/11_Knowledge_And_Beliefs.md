@@ -36,9 +36,6 @@ $$\textbf{K}_aP$$
 
 The agent $a$ knows the sentence $P$. $\textbf{K}$ is the propositional attitude **Knows**.
 
-$$\textbf{K}_{federico}\textbf{K}_{elena}\operatorname{location}(car, garage)$$
-
-The agent $\operatorname{federico}$ knows that the agent $\operatorname{elena}$ knows that the car is at the garage.
 #
 
 ## 3. Modal Logics
